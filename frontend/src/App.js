@@ -557,7 +557,7 @@ function App() {
                     
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Shares Owned</label>
+                        <label>Shares</label>
                         <input
                           type="number"
                           name="strategy_params.shares_owned"
@@ -570,7 +570,7 @@ function App() {
                         />
                       </div>
                       <div className="form-group">
-                        <label>Your Cost Basis</label>
+                        <label>Cost</label>
                         <input
                           type="number"
                           name="strategy_params.underlying_cost_basis"
@@ -581,14 +581,11 @@ function App() {
                           step="0.01"
                           placeholder="e.g., 200.00"
                         />
-                        <small className="text-xs text-gray-600 mt-1">
-                          Your actual purchase price per share
-                        </small>
                       </div>
                     </div>
                     
                     <div className="form-group">
-                      <label>Max Contracts to Sell</label>
+                      <label>Contracts to Sell</label>
                       <input
                         type="number"
                         name="strategy_params.max_contracts_to_sell"
