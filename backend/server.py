@@ -702,17 +702,17 @@ class CoveredCallBacktester:
             }
         
         total_trades = len(self.closed_trades)
-        winning_trades = len([t for t in self.closed_trades if t['total_return'] > 0])
+        winning_trades = len([t for t in self.closed_trades if t.get('option_pnl', 0) > 0])
         win_rate = winning_trades / total_trades
         
-        avg_return = sum(t['total_return'] for t in self.closed_trades) / total_trades
-        total_premium = sum(t['premium_received'] for t in self.closed_trades)
+        avg_return = sum(t.get('option_pnl', 0) for t in self.closed_trades) / total_trades
+        total_premium = sum(t.get('premium_received', 0) for t in self.closed_trades)
         
         expired_worthless = len([t for t in self.closed_trades if t.get('expired_worthless', False)])
         called_away = len([t for t in self.closed_trades if t.get('called_away', False)])
         
-        avg_dte = sum(t['dte_at_open'] for t in self.closed_trades) / total_trades
-        avg_delta = sum(t['delta_at_open'] for t in self.closed_trades) / total_trades
+        avg_dte = sum(t.get('dte_at_open', 0) for t in self.closed_trades) / total_trades
+        avg_delta = sum(t.get('delta_at_open', 0) for t in self.closed_trades) / total_trades
         
         return {
             'total_trades': total_trades,
