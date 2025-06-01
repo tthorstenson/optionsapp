@@ -371,31 +371,35 @@ class CoveredCallBacktester:
         """Find options matching strategy criteria"""
         suitable = []
         
+        print(f"Searching {len(options)} options for stock price ${stock_price}, target delta {strategy_params.delta_target}, target DTE {strategy_params.dte_target}")
+        
         for option in options:
-            # Filter by DTE range (more flexible)
+            # Filter by DTE range (very flexible)
             dte_diff = abs(option['dte'] - strategy_params.dte_target)
             if strategy_params.dte_target <= 7:  # Weekly options
-                if dte_diff > 3:  # Within 3 days for weekly
+                if dte_diff > 5:  # Within 5 days for weekly
                     continue
             else:  # Monthly options
-                if dte_diff > 14:  # Within 2 weeks for monthly
+                if dte_diff > 21:  # Within 3 weeks for monthly
                     continue
             
-            # Filter by delta range (more flexible)
+            # Filter by delta range (very flexible)
             delta_diff = abs(option['delta'] - strategy_params.delta_target)
-            if delta_diff > 0.1:  # Within 10 delta points
+            if delta_diff > 0.15:  # Within 15 delta points
                 continue
             
-            # Must be OTM call (but allow closer strikes)
-            if option['strike'] <= stock_price * 1.01:  # Allow 1% OTM minimum
+            # Must be OTM call (very relaxed)
+            if option['strike'] <= stock_price * 0.98:  # Allow 2% ITM
                 continue
             
-            # Must have reasonable option price
-            if option['option_price'] < 0.50:  # Minimum $0.50 premium
+            # Must have reasonable option price (very low minimum)
+            if option['option_price'] < 0.25:  # Minimum $0.25 premium
                 continue
             
             suitable.append(option)
+            print(f"Found suitable option: Strike ${option['strike']}, Delta {option['delta']}, DTE {option['dte']}, Price ${option['option_price']}")
         
+        print(f"Found {len(suitable)} suitable options")
         return suitable
     
     def manage_positions(self, current_date: str, stock_price: float, options_data: Dict):
