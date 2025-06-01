@@ -685,15 +685,6 @@ function App() {
                     </button>
                   </div>
                   
-                  {/* Breakdown info */}
-                  <div style={{ backgroundColor: '#f0f0f0', padding: '10px', marginBottom: '10px', fontSize: '12px' }}>
-                    <strong>Breakdown:</strong> Results received - Total Return: {(backtestResults.performance_metrics?.total_return * 100).toFixed(2)}%, 
-                    Total Trades: {backtestResults.covered_call_metrics?.total_trades || 'undefined'}, 
-                    Underlying P&L: ${backtestResults.underlying_summary?.underlying_pnl?.toFixed(0) || 'N/A'}, 
-                    Options Premium: ${backtestResults.covered_call_metrics?.total_premium_collected?.toFixed(0) || 'N/A'},
-                    Results Length: {backtestResults.results?.length || 0}
-                  </div>
-                  
                   <MetricsGrid 
                     metrics={backtestResults.performance_metrics}
                     coveredCallMetrics={backtestResults.covered_call_metrics}
