@@ -544,12 +544,25 @@ function App() {
                     </button>
                   </div>
                   
+                  {/* Debug info */}
+                  <div style={{ backgroundColor: '#f0f0f0', padding: '10px', marginBottom: '10px', fontSize: '12px' }}>
+                    <strong>Debug:</strong> Results received - Total Return: {(backtestResults.performance_metrics?.total_return * 100).toFixed(2)}%, 
+                    Total Trades: {backtestResults.covered_call_metrics?.total_trades}
+                  </div>
+                  
                   <MetricsGrid 
                     metrics={backtestResults.performance_metrics}
                     coveredCallMetrics={backtestResults.covered_call_metrics}
                   />
                   
                   <PerformanceChart data={backtestResults} />
+                </div>
+              )}
+              
+              {/* Debug: Always show if results state exists */}
+              {backtestResults === null && (
+                <div style={{ backgroundColor: '#fff3cd', padding: '10px', marginTop: '10px' }}>
+                  <strong>Debug:</strong> No results to display yet. Run a backtest to see results.
                 </div>
               )}
             </div>
