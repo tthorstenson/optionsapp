@@ -676,7 +676,7 @@ function App() {
               {backtestResults && (
                 <div className="results-section">
                   <div className="results-header">
-                    <h2>Backtest Results</h2>
+                    <h2>Results</h2>
                     <button 
                       onClick={() => addToComparison(backtestResults)}
                       className="btn-secondary"
