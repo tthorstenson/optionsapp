@@ -47,6 +47,8 @@ class StrategyParams(BaseModel):
     strategy_type: str = "weekly"  # weekly, monthly, rolling
     entry_day: str = "Monday"  # Monday, Tuesday, etc.
     shares_owned: int = 1000  # Number of underlying shares owned
+    underlying_cost_basis: float = 200.0  # Your actual purchase price per share
+    max_contracts_to_sell: int = 5  # Maximum contracts to sell (default: 5 out of 10 possible)
 
 class BacktestRequest(BaseModel):
     ticker: str
