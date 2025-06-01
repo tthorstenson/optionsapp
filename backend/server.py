@@ -891,8 +891,8 @@ class CoveredCallBacktester:
         expired_worthless = len([t for t in option_trades if t.get('expired_worthless', False)])
         called_away = len([t for t in option_trades if t.get('called_away', False)])
         
-        avg_dte = sum(t.get('dte_at_open', 0) for t in option_trades) / total_trades
-        avg_delta = sum(t.get('delta_at_open', 0) for t in option_trades) / total_trades
+        avg_dte = sum(t.get('dte_at_open', 0) for t in option_trades) / total_trades if total_trades > 0 else 0
+        avg_delta = sum(t.get('delta_at_open', 0) for t in option_trades) / total_trades if total_trades > 0 else 0
         
         # Calculate repurchase metrics
         total_repurchase_cost = sum(t.get('repurchase_cost', 0) for t in repurchase_trades)
