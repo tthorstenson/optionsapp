@@ -707,6 +707,7 @@ function App() {
                     metrics={backtestResults.performance_metrics}
                     coveredCallMetrics={backtestResults.covered_call_metrics}
                     underlyingSummary={backtestResults.underlying_summary}
+                    buyHoldComparison={backtestResults.buy_and_hold_comparison}
                   />
                   
                   <PerformanceChart data={backtestResults} />
