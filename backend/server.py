@@ -354,7 +354,7 @@ class CoveredCallBacktester:
                 'id': str(uuid.uuid4()),
                 'open_date': current_date,
                 'stock_price': stock_price,
-                'shares': strategy_params.shares_per_contract,
+                'shares': shares_per_contract,
                 'strike': best_option['strike'],
                 'expiration': best_option['expiration'],
                 'premium_received': option_premium,
