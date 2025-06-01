@@ -320,14 +320,14 @@ class CoveredCallBacktester:
     def open_covered_call(self, current_date: str, stock_price: float, options_data: Dict, strategy_params: StrategyParams):
         """Open a new covered call position"""
         if current_date not in options_data:
-            return
+            return False
         
         suitable_options = self.find_suitable_options(
             options_data[current_date], stock_price, strategy_params
         )
         
         if not suitable_options:
-            return
+            return False
         
         # Select the best option (closest to target delta)
         best_option = min(suitable_options, 
@@ -355,6 +355,8 @@ class CoveredCallBacktester:
             self.positions.append(position)
             self.current_capital -= stock_cost
             self.current_capital += option_premium
+            return True
+        return False
     
     def find_suitable_options(self, options: List[Dict], stock_price: float, strategy_params: StrategyParams):
         """Find options matching strategy criteria"""
