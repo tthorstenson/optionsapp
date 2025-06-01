@@ -291,6 +291,26 @@ function App() {
       {buyHoldComparison && (
         <div className="comparison-cards">
           <h3>Strategy Comparison</h3>
+          
+          {/* Stock Price Range */}
+          <div className="price-range-display">
+            <div className="price-range-item">
+              <span className="price-label">Start:</span>
+              <span className="price-value">${underlyingSummary?.backtest_start_price?.toFixed(2) || 'N/A'}</span>
+              <span className="price-date">({underlyingSummary?.start_date || 'N/A'})</span>
+            </div>
+            <div className="price-arrow">→</div>
+            <div className="price-range-item">
+              <span className="price-label">End:</span>
+              <span className="price-value">${underlyingSummary?.final_price?.toFixed(2) || 'N/A'}</span>
+              <span className="price-date">({underlyingSummary?.end_date || 'N/A'})</span>
+            </div>
+            <div className="price-change">
+              <span className={`price-change-value ${(underlyingSummary?.stock_price_change || 0) >= 0 ? 'positive' : 'negative'}`}>
+                {(underlyingSummary?.stock_price_change || 0) >= 0 ? '+' : ''}{((underlyingSummary?.stock_price_change || 0) * 100).toFixed(1)}%
+              </span>
+            </div>
+          </div>
           <div className="strategy-comparison">
             <div className="strategy-card buy-hold">
               <h4>📈 Buy & Hold Only</h4>
