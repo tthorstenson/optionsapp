@@ -665,10 +665,10 @@ function App() {
 
                   <button 
                     type="submit" 
-                    className="btn-primary"
+                    className="btn-primary btn-compact"
                     disabled={loading}
                   >
-                    {loading ? 'Running Backtest...' : 'Run Backtest'}
+                    {loading ? 'Running...' : 'Backtest'}
                   </button>
                 </form>
               </div>
