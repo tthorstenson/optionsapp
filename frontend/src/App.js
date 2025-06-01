@@ -20,7 +20,9 @@ function App() {
       loss_limit: 2.0,
       strategy_type: 'weekly',
       entry_day: 'Monday',
-      shares_owned: 1000
+      shares_owned: 1000,
+      underlying_cost_basis: 200.0,
+      max_contracts_to_sell: 5
     }
   });
   
