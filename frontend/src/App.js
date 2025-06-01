@@ -717,7 +717,7 @@ function App() {
 
         {activeTab === 'strategies' && (
           <div className="strategies-section">
-            <h2>Strategy Library</h2>
+            <h2>Library</h2>
             <div className="strategies-grid">
               {savedStrategies.map(strategy => (
                 <div key={strategy.id} className="strategy-card">
