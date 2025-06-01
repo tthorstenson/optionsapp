@@ -411,8 +411,8 @@ class CoveredCallBacktester:
     
     def calculate_options_pnl(self, current_date: str, options_data: Dict):
         """Calculate P&L on option positions"""
-        total_premium_collected = sum(t['premium_received'] for t in self.closed_trades)
-        total_premium_collected += sum(p['premium_received'] for p in self.option_positions if p['status'] == 'open')
+        total_premium_collected = sum(t.get('premium_received', 0) for t in self.closed_trades)
+        total_premium_collected += sum(p.get('premium_received', 0) for p in self.option_positions if p['status'] == 'open')
         
         # Calculate current value of open options (liability)
         current_option_liability = 0
