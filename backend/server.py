@@ -589,17 +589,20 @@ class CoveredCallBacktester:
         """Close option position at expiration"""
         if stock_price > position['strike']:
             # Options assigned - stock called away
-            # We lose the stock but keep the premium + strike price
             assigned_proceeds = position['strike'] * position['contracts'] * 100
             called_away = True
             
-            # Remove the called away shares from our position
-            # (In reality, you'd buy replacement shares or reduce position)
+            # Record the assignment
+            shares_called_away = position['contracts'] * 100
+            
+            # NOTE: We'll repurchase shares the next trading day at market open
+            # This will be handled in the main backtest loop
             
         else:
             # Options expire worthless - we keep stock and premium
             called_away = False
             assigned_proceeds = 0
+            shares_called_away = 0
         
         # Calculate total option P&L
         option_pnl = position['premium_received']  # We keep the full premium
@@ -618,12 +621,19 @@ class CoveredCallBacktester:
             'expired_worthless': not called_away,
             'dte_at_open': position['dte_at_open'],
             'delta_at_open': position['delta'],
-            'assigned_proceeds': assigned_proceeds if called_away else 0
+            'assigned_proceeds': assigned_proceeds if called_away else 0,
+            'shares_called_away': shares_called_away,
+            'repurchase_needed': called_away  # Flag for repurchase logic
         }
         
         self.closed_trades.append(trade)
         if called_away:
             self.current_cash += assigned_proceeds
+            # Reduce our stock position by called away shares
+            for ticker, stock_pos in self.stock_positions.items():
+                if stock_pos['shares'] >= shares_called_away:
+                    stock_pos['shares'] -= shares_called_away
+                    break
         position['status'] = 'closed'
     
     def check_option_profit_loss_targets(self, position: Dict, current_option_price: float, stock_price: float):
