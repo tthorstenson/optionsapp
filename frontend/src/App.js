@@ -432,6 +432,23 @@ function App() {
                   <div className="strategy-params">
                     <h3>Strategy Parameters</h3>
                     
+                    <div className="form-group">
+                      <label>Shares Owned</label>
+                      <input
+                        type="number"
+                        name="strategy_params.shares_owned"
+                        value={backtestForm.strategy_params.shares_owned}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        min="100"
+                        step="100"
+                        placeholder="e.g., 1000"
+                      />
+                      <small className="text-xs text-gray-600 mt-1">
+                        Maximum contracts: {Math.floor(backtestForm.strategy_params.shares_owned / 100)}
+                      </small>
+                    </div>
+                    
                     <div className="form-row">
                       <div className="form-group">
                         <label>Target Delta</label>
