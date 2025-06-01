@@ -112,7 +112,11 @@ class CoveredCallBacktester:
                 
                 # Look for new opportunities
                 if self.should_open_position(current_date, strategy_params):
-                    self.open_covered_call(current_date, current_price, options_data, strategy_params)
+                    position_opened = self.open_covered_call(current_date, current_price, options_data, strategy_params)
+                    if position_opened:
+                        print(f"Opened position on {current_date} at ${current_price}")
+                    else:
+                        print(f"No suitable options found on {current_date}")
                 
                 # Calculate portfolio value
                 portfolio_value = self.calculate_portfolio_value(current_date, current_price, options_data)
