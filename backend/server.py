@@ -846,7 +846,7 @@ class CoveredCallBacktester:
         }
     
     def calculate_covered_call_metrics(self):
-        """Calculate covered call specific metrics"""
+        """Calculate covered call specific metrics including repurchase costs"""
         if not self.closed_trades:
             return {
                 'total_trades': 0,
@@ -856,21 +856,51 @@ class CoveredCallBacktester:
                 'pct_expired_worthless': 0,
                 'pct_called_away': 0,
                 'avg_dte_at_open': 0,
-                'avg_delta_at_open': 0
+                'avg_delta_at_open': 0,
+                'total_repurchase_cost': 0,
+                'net_assignment_impact': 0,
+                'repurchase_success_rate': 0
             }
         
-        total_trades = len(self.closed_trades)
-        winning_trades = len([t for t in self.closed_trades if t.get('option_pnl', 0) > 0])
+        # Separate option trades from repurchase trades
+        option_trades = [t for t in self.closed_trades if t.get('strategy') == 'covered_call']
+        repurchase_trades = [t for t in self.closed_trades if t.get('strategy') == 'share_repurchase']
+        
+        if not option_trades:
+            return {
+                'total_trades': 0,
+                'win_rate': 0,
+                'avg_return_per_trade': 0,
+                'total_premium_collected': 0,
+                'pct_expired_worthless': 0,
+                'pct_called_away': 0,
+                'avg_dte_at_open': 0,
+                'avg_delta_at_open': 0,
+                'total_repurchase_cost': 0,
+                'net_assignment_impact': 0,
+                'repurchase_success_rate': 0
+            }
+        
+        total_trades = len(option_trades)
+        winning_trades = len([t for t in option_trades if t.get('option_pnl', 0) > 0])
         win_rate = winning_trades / total_trades
         
-        avg_return = sum(t.get('option_pnl', 0) for t in self.closed_trades) / total_trades
-        total_premium = sum(t.get('premium_received', 0) for t in self.closed_trades)
+        avg_return = sum(t.get('option_pnl', 0) for t in option_trades) / total_trades
+        total_premium = sum(t.get('premium_received', 0) for t in option_trades)
         
-        expired_worthless = len([t for t in self.closed_trades if t.get('expired_worthless', False)])
-        called_away = len([t for t in self.closed_trades if t.get('called_away', False)])
+        expired_worthless = len([t for t in option_trades if t.get('expired_worthless', False)])
+        called_away = len([t for t in option_trades if t.get('called_away', False)])
         
-        avg_dte = sum(t.get('dte_at_open', 0) for t in self.closed_trades) / total_trades
-        avg_delta = sum(t.get('delta_at_open', 0) for t in self.closed_trades) / total_trades
+        avg_dte = sum(t.get('dte_at_open', 0) for t in option_trades) / total_trades
+        avg_delta = sum(t.get('delta_at_open', 0) for t in option_trades) / total_trades
+        
+        # Calculate repurchase metrics
+        total_repurchase_cost = sum(t.get('repurchase_cost', 0) for t in repurchase_trades)
+        successful_repurchases = len([t for t in option_trades if t.get('repurchased') == True])
+        repurchase_success_rate = successful_repurchases / called_away if called_away > 0 else 0
+        
+        # Net impact of assignments (assignment proceeds - repurchase costs)
+        net_assignment_impact = sum(t.get('net_assignment_impact', 0) for t in option_trades)
         
         return {
             'total_trades': total_trades,
@@ -880,7 +910,12 @@ class CoveredCallBacktester:
             'pct_expired_worthless': expired_worthless / total_trades if total_trades > 0 else 0,
             'pct_called_away': called_away / total_trades if total_trades > 0 else 0,
             'avg_dte_at_open': avg_dte,
-            'avg_delta_at_open': avg_delta
+            'avg_delta_at_open': avg_delta,
+            'total_repurchase_cost': total_repurchase_cost,
+            'net_assignment_impact': net_assignment_impact,
+            'repurchase_success_rate': repurchase_success_rate,
+            'assignments_repurchased': successful_repurchases,
+            'total_assignments': called_away
         }
 
 # API Endpoints
