@@ -738,6 +738,9 @@ function App() {
                   />
                   
                   <PerformanceChart data={backtestResults} />
+                  
+                  {/* Underlying Stock Performance Chart */}
+                  <UnderlyingChart data={backtestResults} underlyingSummary={backtestResults.underlying_summary} />
                 </div>
               )}
             </div>
