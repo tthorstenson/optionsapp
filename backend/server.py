@@ -647,7 +647,7 @@ class CoveredCallBacktester:
         
         return total_value
     
-    def calculate_performance_metrics(self, results: List[Dict]):
+    def calculate_performance_metrics(self, results: List[Dict], ticker: str = None):
         """Calculate performance metrics"""
         if not results:
             return {}
