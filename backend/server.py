@@ -446,6 +446,36 @@ class CoveredCallBacktester:
             'position_value': final_price * position['shares']
         }
     
+    def force_close_remaining_positions(self, end_date: str, final_price: float, options_data: Dict):
+        """Force close any remaining open positions at the end of backtest"""
+        closed_count = 0
+        for position in self.option_positions:
+            if position['status'] == 'open':
+                # Close as if it expired on the final date
+                self.close_option_position_expiration(position, final_price)
+                closed_count += 1
+        return closed_count
+    
+    def format_trade_details(self):
+        """Format individual trade details for detailed view"""
+        formatted_trades = []
+        for i, trade in enumerate(self.closed_trades, 1):
+            formatted_trades.append({
+                'trade_number': i,
+                'open_date': trade['open_date'],
+                'close_date': trade.get('close_date', 'Open'),
+                'strike': trade.get('strike', 0),
+                'contracts': trade.get('contracts', 0),
+                'premium_received': trade.get('premium_received', 0),
+                'option_pnl': trade.get('option_pnl', 0),
+                'called_away': trade.get('called_away', False),
+                'expired_worthless': trade.get('expired_worthless', False),
+                'close_reason': trade.get('close_reason', 'expiration'),
+                'dte_at_open': trade.get('dte_at_open', 0),
+                'delta_at_open': trade.get('delta_at_open', 0)
+            })
+        return formatted_trades
+    
     def find_suitable_options(self, options: List[Dict], stock_price: float, strategy_params: StrategyParams):
         """Find options matching strategy criteria"""
         suitable = []
