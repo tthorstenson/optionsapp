@@ -710,7 +710,7 @@ class CoveredCallBacktester:
         option_buyback_cost = option_price * position['contracts'] * 100
         
         # Calculate option P&L
-        option_pnl = position['premium_received'] - option_buyback_cost
+        option_pnl = position.get('premium_received', 0) - option_buyback_cost
         
         trade = {
             'id': position['id'],
