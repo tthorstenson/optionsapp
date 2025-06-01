@@ -127,6 +127,9 @@ class CoveredCallBacktester:
                 # Update underlying position
                 self.stock_positions[ticker]['current_price'] = current_price
                 
+                # Handle repurchases from previous day's assignments
+                self.handle_share_repurchases(current_date, current_price, ticker, strategy_params)
+                
                 # Manage existing option positions
                 self.manage_option_positions(current_date, current_price, options_data)
                 
