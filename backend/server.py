@@ -666,7 +666,7 @@ class CoveredCallBacktester:
             'close_date': position['expiration'],
             'contracts': position['contracts'],
             'strategy': 'covered_call',
-            'premium_received': position['premium_received'],
+            'premium_received': position.get('premium_received', 0),
             'option_pnl': option_pnl,
             'strike': position['strike'],
             'stock_price_at_expiration': stock_price,
