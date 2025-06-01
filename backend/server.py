@@ -142,40 +142,25 @@ class CoveredCallBacktester:
             return {"error": str(e)}
     
     def get_stock_data(self, ticker: str, start_date: str, end_date: str):
-        """Get stock price data from Polygon"""
+        """Get stock price data from Polygon or generate demo data"""
         try:
-            client = get_polygon_client()
-            stock_data = []
+            # Always use demo data first to ensure functionality
+            print(f"Generating demo data for {ticker} from {start_date} to {end_date}")
+            return self.generate_demo_stock_data(ticker, start_date, end_date)
             
-            # Convert dates for Polygon API
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-            
-            # Get aggregates (daily bars)
-            aggs = client.list_aggs(
-                ticker=ticker,
-                multiplier=1,
-                timespan="day",
-                from_=start_date,
-                to=end_date,
-                limit=50000
-            )
-            
-            for agg in aggs:
-                stock_data.append({
-                    'date': datetime.fromtimestamp(agg.timestamp / 1000).strftime('%Y-%m-%d'),
-                    'open': agg.open,
-                    'high': agg.high,
-                    'low': agg.low,
-                    'close': agg.close,
-                    'volume': agg.volume
-                })
-            
-            return sorted(stock_data, key=lambda x: x['date'])
+            # Polygon API code (commented out due to plan limitations)
+            # client = get_polygon_client()
+            # aggs = client.list_aggs(
+            #     ticker=ticker,
+            #     multiplier=1,
+            #     timespan="day", 
+            #     from_=start_date,
+            #     to=end_date,
+            #     limit=50000
+            # )
             
         except Exception as e:
-            print(f"Error fetching stock data: {e}")
-            # Return simulated data for demo
+            print(f"Error with data: {e}, using demo data")
             return self.generate_demo_stock_data(ticker, start_date, end_date)
     
     def generate_demo_stock_data(self, ticker: str, start_date: str, end_date: str):
