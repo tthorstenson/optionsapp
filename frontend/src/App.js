@@ -468,7 +468,7 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>📊 Options Backtesting Pro</h1>
+        <h1>Options Backtesting</h1>
         <div className="status-indicator">
           <span className={`status-dot ${polygonStatus?.status === 'success' ? 'success' : 'error'}`}></span>
           Polygon API: {polygonStatus?.status || 'Checking...'}
