@@ -351,6 +351,74 @@ body {
 .metrics-section {
   width: 100%;
 }
+
+/* Price Range Display */
+.price-range-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 0.5rem;
+  border: 1px solid #cbd5e1;
+}
+
+.price-range-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.price-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.price-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.price-date {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.price-arrow {
+  font-size: 1.5rem;
+  color: #64748b;
+  margin: 0 0.5rem;
+}
+
+.price-change {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.price-change-value {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.price-change-value.positive {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.price-change-value.negative {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
