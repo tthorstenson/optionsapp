@@ -473,55 +473,105 @@ class CoveredCallBacktester:
         
         return suitable
     
-    def manage_positions(self, current_date: str, stock_price: float, options_data: Dict):
-        """Manage existing positions"""
-        for position in self.positions:
+    def manage_option_positions(self, current_date: str, stock_price: float, options_data: Dict):
+        """Manage existing option positions"""
+        for position in self.option_positions:
             if position['status'] != 'open':
                 continue
             
             # Check if expired
             if current_date >= position['expiration']:
-                self.close_position_expiration(position, stock_price)
+                self.close_option_position_expiration(position, stock_price)
                 continue
             
             # Check profit/loss targets
             if current_date in options_data:
                 current_option_price = self.get_current_option_price(position, options_data[current_date])
                 if current_option_price:
-                    self.check_profit_loss_targets(position, current_option_price, stock_price)
+                    self.check_option_profit_loss_targets(position, current_option_price, stock_price)
     
-    def close_position_expiration(self, position: Dict, stock_price: float):
-        """Close position at expiration"""
+    def close_option_position_expiration(self, position: Dict, stock_price: float):
+        """Close option position at expiration"""
         if stock_price > position['strike']:
-            # Stock called away
-            proceeds = position['strike'] * position['shares']
+            # Options assigned - stock called away
+            # We lose the stock but keep the premium + strike price
+            assigned_proceeds = position['strike'] * position['contracts'] * 100
             called_away = True
+            
+            # Remove the called away shares from our position
+            # (In reality, you'd buy replacement shares or reduce position)
+            
         else:
-            # Keep stock, option expires worthless
-            proceeds = stock_price * position['shares']
+            # Options expire worthless - we keep stock and premium
             called_away = False
+            assigned_proceeds = 0
         
-        total_return = proceeds - (position['stock_price'] * position['shares']) + position['premium_received']
+        # Calculate total option P&L
+        option_pnl = position['premium_received']  # We keep the full premium
         
         trade = {
             'id': position['id'],
             'open_date': position['open_date'],
             'close_date': position['expiration'],
-            'ticker': 'TSLA',  # TODO: make dynamic
+            'contracts': position['contracts'],
             'strategy': 'covered_call',
             'premium_received': position['premium_received'],
-            'stock_entry': position['stock_price'],
-            'stock_exit': position['strike'] if called_away else stock_price,
-            'total_return': total_return,
-            'return_pct': total_return / (position['stock_price'] * position['shares']),
+            'option_pnl': option_pnl,
+            'strike': position['strike'],
+            'stock_price_at_expiration': stock_price,
             'called_away': called_away,
             'expired_worthless': not called_away,
+            'dte_at_open': position['dte_at_open'],
+            'delta_at_open': position['delta'],
+            'assigned_proceeds': assigned_proceeds if called_away else 0
+        }
+        
+        self.closed_trades.append(trade)
+        if called_away:
+            self.current_cash += assigned_proceeds
+        position['status'] = 'closed'
+    
+    def check_option_profit_loss_targets(self, position: Dict, current_option_price: float, stock_price: float):
+        """Check if option position hits profit/loss targets"""
+        # Calculate current P&L on option
+        current_option_value = current_option_price * position['contracts'] * 100
+        option_pnl = position['premium_received'] - current_option_value
+        profit_pct = option_pnl / position['premium_received']
+        
+        # Close if profit target hit (e.g., 50% of premium captured)
+        if profit_pct >= 0.5:  # 50% profit target
+            self.close_option_position_early(position, stock_price, current_option_price, 'profit_target')
+        
+        # Close if loss limit hit (e.g., 200% of premium lost)
+        elif profit_pct <= -2.0:  # 200% loss limit
+            self.close_option_position_early(position, stock_price, current_option_price, 'loss_limit')
+    
+    def close_option_position_early(self, position: Dict, stock_price: float, option_price: float, reason: str):
+        """Close option position before expiration by buying back the option"""
+        # Buy back the option
+        option_buyback_cost = option_price * position['contracts'] * 100
+        
+        # Calculate option P&L
+        option_pnl = position['premium_received'] - option_buyback_cost
+        
+        trade = {
+            'id': position['id'],
+            'open_date': position['open_date'],
+            'close_date': datetime.now().strftime('%Y-%m-%d'),
+            'contracts': position['contracts'],
+            'strategy': 'covered_call',
+            'premium_received': position['premium_received'],
+            'option_buyback_cost': option_buyback_cost,
+            'option_pnl': option_pnl,
+            'close_reason': reason,
+            'called_away': False,
+            'expired_worthless': False,
             'dte_at_open': position['dte_at_open'],
             'delta_at_open': position['delta']
         }
         
         self.closed_trades.append(trade)
-        self.current_capital += proceeds
+        self.current_cash -= option_buyback_cost
         position['status'] = 'closed'
     
     def get_current_option_price(self, position: Dict, current_options: List[Dict]):
