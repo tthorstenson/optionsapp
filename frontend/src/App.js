@@ -705,10 +705,10 @@ function App() {
                 </div>
               )}
               
-              {/* Debug: Always show if results state exists */}
+              {/* Breakdown: Always show if results state exists */}
               {backtestResults === null && (
                 <div style={{ backgroundColor: '#fff3cd', padding: '10px', marginTop: '10px' }}>
-                  <strong>Debug:</strong> No results to display yet. Run a backtest to see results.
+                  <strong>Breakdown:</strong> No results to display yet. Run a backtest to see results.
                 </div>
               )}
             </div>
