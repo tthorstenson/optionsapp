@@ -175,13 +175,23 @@ function App() {
               
               {/* Chart lines */}
               {comparisonData.map((strategy, strategyIndex) => {
-                const points = strategy.results.results.map((point, index) => {
-                  const x = (index / (strategy.results.results.length - 1)) * 780 + 10;
-                  const maxValue = Math.max(...strategy.results.results.map(p => p.portfolio_value));
-                  const minValue = Math.min(...strategy.results.results.map(p => p.portfolio_value));
-                  const y = 390 - ((point.portfolio_value - minValue) / (maxValue - minValue)) * 380;
+                const strategyResults = strategy.results.results || [];
+                if (strategyResults.length === 0) return null;
+                
+                const values = strategyResults.map(p => p.portfolio_value).filter(v => !isNaN(v) && isFinite(v));
+                if (values.length === 0) return null;
+                
+                const maxValue = Math.max(...values);
+                const minValue = Math.min(...values);
+                const range = maxValue - minValue || 1;
+                
+                const points = strategyResults.map((point, index) => {
+                  const x = (index / Math.max(strategyResults.length - 1, 1)) * 780 + 10;
+                  const y = 390 - ((point.portfolio_value - minValue) / range) * 380;
                   return `${x},${y}`;
-                }).join(' ');
+                }).filter(point => !point.includes('NaN')).join(' ');
+                
+                if (points.length === 0) return null;
                 
                 return (
                   <polyline
@@ -216,14 +226,36 @@ function App() {
     }
 
     // Single strategy chart
-    const maxValue = Math.max(...chartData.map(p => p.portfolio_value));
-    const minValue = Math.min(...chartData.map(p => p.portfolio_value));
+    if (!chartData || chartData.length === 0) {
+      return (
+        <div className="performance-chart">
+          <div className="chart-placeholder">
+            <p>No chart data available</p>
+          </div>
+        </div>
+      );
+    }
+    
+    const values = chartData.map(p => p.portfolio_value).filter(v => !isNaN(v) && isFinite(v));
+    if (values.length === 0) {
+      return (
+        <div className="performance-chart">
+          <div className="chart-placeholder">
+            <p>Invalid chart data</p>
+          </div>
+        </div>
+      );
+    }
+    
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    const range = maxValue - minValue || 1;
     
     const points = chartData.map((point, index) => {
-      const x = (index / (chartData.length - 1)) * 780 + 10;
-      const y = 390 - ((point.portfolio_value - minValue) / (maxValue - minValue)) * 380;
+      const x = (index / Math.max(chartData.length - 1, 1)) * 780 + 10;
+      const y = 390 - ((point.portfolio_value - minValue) / range) * 380;
       return `${x},${y}`;
-    }).join(' ');
+    }).filter(point => !point.includes('NaN')).join(' ');
 
     return (
       <div className="performance-chart">
@@ -231,12 +263,14 @@ function App() {
         <div className="chart-container">
           <svg width="100%" height="400" viewBox="0 0 800 400">
             <rect width="800" height="400" fill="#f8fafc" stroke="#e2e8f0"/>
-            <polyline
-              points={points}
-              fill="none"
-              stroke="#1e3a8a"
-              strokeWidth="3"
-            />
+            {points.length > 0 && (
+              <polyline
+                points={points}
+                fill="none"
+                stroke="#1e3a8a"
+                strokeWidth="3"
+              />
+            )}
           </svg>
         </div>
       </div>
