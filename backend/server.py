@@ -344,9 +344,10 @@ class CoveredCallBacktester:
         best_option = min(suitable_options, 
                          key=lambda x: abs(x['delta'] - strategy_params.delta_target))
         
-        # Calculate position size
-        stock_cost = stock_price * strategy_params.shares_per_contract
-        option_premium = best_option['option_price'] * strategy_params.shares_per_contract
+        # Calculate position size  
+        shares_per_contract = 100  # Use 100 shares per contract
+        stock_cost = stock_price * shares_per_contract
+        option_premium = best_option['option_price'] * shares_per_contract
         
         if self.current_capital >= stock_cost:
             position = {
