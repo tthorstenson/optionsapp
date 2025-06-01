@@ -668,7 +668,7 @@ function App() {
                     className="btn-primary"
                     disabled={loading}
                   >
-                    {loading ? 'Running Backtest...' : '🚀 Run Backtest'}
+                    {loading ? 'Running Backtest...' : 'Run Backtest'}
                   </button>
                 </form>
               </div>
