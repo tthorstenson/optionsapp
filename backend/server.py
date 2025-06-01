@@ -768,7 +768,7 @@ class CoveredCallBacktester:
             'close_date': datetime.now().strftime('%Y-%m-%d'),  # Current date
             'ticker': 'TSLA',  # TODO: make dynamic
             'strategy': 'covered_call',
-            'premium_received': position['premium_received'],
+            'premium_received': position.get('premium_received', 0),
             'stock_entry': position['stock_price'],
             'stock_exit': stock_price,
             'option_buyback': option_cost,
