@@ -787,20 +787,22 @@ class CoveredCallBacktester:
     
     def calculate_portfolio_value(self, current_date: str, stock_price: float, options_data: Dict):
         """Calculate current portfolio value"""
-        total_value = self.current_capital
+        # Start with cash
+        total_value = self.current_cash
         
-        # Add value of open positions
-        for position in self.positions:
+        # Add value of stock holdings (at current market price)
+        for ticker, stock_position in self.stock_positions.items():
+            stock_value = stock_position['shares'] * stock_price
+            total_value += stock_value
+        
+        # Subtract current option liabilities (what we'd pay to close positions)
+        for position in self.option_positions:
             if position['status'] == 'open':
-                # Stock value
-                stock_value = stock_price * position['shares']
-                total_value += stock_value
-                
-                # Option liability
                 if current_date in options_data:
                     current_option_price = self.get_current_option_price(position, options_data[current_date])
                     if current_option_price:
-                        option_liability = current_option_price * position['shares']
+                        # This is what we'd pay to buy back the option (liability)
+                        option_liability = current_option_price * position['contracts'] * 100
                         total_value -= option_liability
         
         return total_value
