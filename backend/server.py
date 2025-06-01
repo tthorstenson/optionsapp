@@ -145,7 +145,6 @@ class CoveredCallBacktester:
         """Get stock price data from Polygon or generate demo data"""
         try:
             # Always use demo data first to ensure functionality
-            print(f"Generating demo data for {ticker} from {start_date} to {end_date}")
             return self.generate_demo_stock_data(ticker, start_date, end_date)
             
             # Polygon API code (commented out due to plan limitations)
