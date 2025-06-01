@@ -325,7 +325,8 @@ class CoveredCallBacktester:
         
         # Check if we have enough capital and not too many positions
         open_positions = len([p for p in self.positions if p['status'] == 'open'])
-        return self.current_capital >= 10000 and open_positions < 10
+        stock_cost = strategy_params.shares_per_contract * 100  # Assume $100 stock price for capital check
+        return self.current_capital >= stock_cost and open_positions < 5
     
     def open_covered_call(self, current_date: str, stock_price: float, options_data: Dict, strategy_params: StrategyParams):
         """Open a new covered call position"""
