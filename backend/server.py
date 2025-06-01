@@ -760,7 +760,7 @@ class CoveredCallBacktester:
         stock_proceeds = stock_price * position['shares']
         option_cost = option_price * position['shares']
         
-        total_return = stock_proceeds - (position['stock_price'] * position['shares']) + position['premium_received'] - option_cost
+        total_return = stock_proceeds - (position['stock_price'] * position['shares']) + position.get('premium_received', 0) - option_cost
         
         trade = {
             'id': position['id'],
