@@ -163,7 +163,8 @@ class CoveredCallBacktester:
                 'trades': self.closed_trades,
                 'covered_call_metrics': self.calculate_covered_call_metrics(),
                 'underlying_summary': self.calculate_underlying_summary(ticker, current_price),
-                'trade_details': self.format_trade_details()  # Individual trade breakdown
+                'trade_details': self.format_trade_details(),  # Individual trade breakdown
+                'buy_and_hold_comparison': self.calculate_buy_and_hold_comparison(ticker, stock_data, strategy_params)
             }
             
         except Exception as e:
