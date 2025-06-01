@@ -480,6 +480,56 @@ class CoveredCallBacktester:
             })
         return formatted_trades
     
+    def calculate_buy_and_hold_comparison(self, ticker: str, stock_data: List[Dict], strategy_params: StrategyParams):
+        """Calculate performance if just holding the stock without covered calls"""
+        if not stock_data:
+            return {}
+        
+        entry_price = strategy_params.underlying_cost_basis
+        final_price = stock_data[-1]['close']
+        shares = strategy_params.shares_owned
+        
+        # Buy and hold metrics
+        buy_hold_initial_value = entry_price * shares
+        buy_hold_final_value = final_price * shares
+        buy_hold_total_return = (final_price - entry_price) * shares
+        buy_hold_return_pct = (final_price - entry_price) / entry_price
+        
+        # Covered call strategy metrics
+        cc_total_premium = sum(t.get('premium_received', 0) for t in self.closed_trades)
+        cc_underlying_return = buy_hold_total_return  # Same underlying performance
+        cc_total_return = cc_underlying_return + cc_total_premium
+        cc_return_pct = cc_total_return / buy_hold_initial_value
+        
+        # Comparison
+        outperformance = cc_total_return - buy_hold_total_return
+        outperformance_pct = (cc_return_pct - buy_hold_return_pct) * 100
+        
+        return {
+            'buy_and_hold': {
+                'initial_value': buy_hold_initial_value,
+                'final_value': buy_hold_final_value,
+                'total_return': buy_hold_total_return,
+                'return_percentage': buy_hold_return_pct * 100,
+                'strategy': 'Buy and Hold Only'
+            },
+            'covered_calls': {
+                'initial_value': buy_hold_initial_value,
+                'final_value': buy_hold_final_value + cc_total_premium,
+                'underlying_return': cc_underlying_return,
+                'options_premium': cc_total_premium,
+                'total_return': cc_total_return,
+                'return_percentage': cc_return_pct * 100,
+                'strategy': 'Covered Calls'
+            },
+            'comparison': {
+                'outperformance_dollars': outperformance,
+                'outperformance_percentage': outperformance_pct,
+                'premium_enhancement': cc_total_premium,
+                'better_strategy': 'Covered Calls' if outperformance > 0 else 'Buy and Hold'
+            }
+        }
+    
     def find_suitable_options(self, options: List[Dict], stock_price: float, strategy_params: StrategyParams):
         """Find options matching strategy criteria"""
         suitable = []
