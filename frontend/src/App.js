@@ -76,11 +76,16 @@ function App() {
   const runBacktest = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setBacktestResults(null); // Clear previous results
+    
+    console.log('Starting backtest with form data:', backtestForm);
     
     try {
       const response = await axios.post(`${API_BASE_URL}/api/backtest`, backtestForm);
+      console.log('Backtest response received:', response.data);
       setBacktestResults(response.data);
       loadSavedStrategies(); // Refresh strategies list
+      console.log('Results set successfully');
     } catch (error) {
       console.error('Backtest failed:', error);
       alert('Backtest failed: ' + (error.response?.data?.detail || error.message));
