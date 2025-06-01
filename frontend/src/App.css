@@ -298,7 +298,7 @@ body {
 .comparison-cards h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1rem;
   text-align: center;
 }
@@ -311,62 +311,88 @@ body {
 }
 
 .strategy-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 2px solid #e2e8f0;
+  background: rgba(15, 20, 25, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
   padding: 1.5rem;
   text-align: center;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.strategy-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
 }
 
 .strategy-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .strategy-card.buy-hold {
-  border-color: #6b7280;
+  border-color: rgba(148, 163, 184, 0.3);
 }
 
 .strategy-card.covered-calls {
-  border-color: #1e3a8a;
+  border-color: rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
 }
 
 .strategy-card.outperformance {
-  border-color: #059669;
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
 }
 
 .strategy-card h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
 .strategy-metrics .metric-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 0.5rem;
+}
+
+.strategy-metrics .metric-value.positive {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.strategy-metrics .metric-value.negative {
+  color: #ff4444;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
 }
 
 .strategy-metrics .metric-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: 0.5rem;
 }
 
 .strategy-metrics .metric-detail {
   font-size: 1rem;
   font-weight: 600;
-  color: #374151;
+  color: #ffffff;
   margin-bottom: 0.5rem;
 }
 
 .strategy-metrics .metric-breakdown {
   font-size: 0.75rem;
-  color: #64748b;
+  color: #94a3b8;
   line-height: 1.4;
 }
 
@@ -383,9 +409,9 @@ body {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  border-radius: 0.5rem;
-  border: 1px solid #cbd5e1;
+  background: rgba(0, 255, 136, 0.1);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 255, 136, 0.2);
 }
 
 .price-range-item {
@@ -398,7 +424,7 @@ body {
 .price-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #64748b;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -406,17 +432,17 @@ body {
 .price-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #00ff88;
 }
 
 .price-date {
   font-size: 0.75rem;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .price-arrow {
   font-size: 1.5rem;
-  color: #64748b;
+  color: #94a3b8;
   margin: 0 0.5rem;
 }
 
@@ -434,13 +460,13 @@ body {
 }
 
 .price-change-value.positive {
-  color: #059669;
-  background: rgba(5, 150, 105, 0.1);
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.2);
 }
 
 .price-change-value.negative {
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.1);
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.2);
 }
 .metrics-grid {
   display: grid;
