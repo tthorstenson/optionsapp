@@ -381,16 +381,6 @@ function App() {
         </div>
         
         <div className="metric-card">
-          <h4>Underlying P&L</h4>
-          <div className="metric-value">
-            ${underlyingSummary?.underlying_pnl?.toLocaleString() || 'N/A'}
-          </div>
-          <small className="text-xs text-gray-600">
-            {underlyingSummary?.shares_owned} shares
-          </small>
-        </div>
-        
-        <div className="metric-card">
           <h4>Options Premium</h4>
           <div className="metric-value positive">
             ${coveredCallMetrics.total_premium_collected?.toLocaleString() || 'N/A'}
@@ -398,20 +388,6 @@ function App() {
           <small className="text-xs text-gray-600">
             {coveredCallMetrics.total_trades} trades
           </small>
-        </div>
-        
-        <div className="metric-card">
-          <h4>Sharpe Ratio</h4>
-          <div className="metric-value">
-            {metrics.sharpe_ratio?.toFixed(2) || 'N/A'}
-          </div>
-        </div>
-        
-        <div className="metric-card">
-          <h4>Max Drawdown</h4>
-          <div className="metric-value negative">
-            {(metrics.max_drawdown * 100).toFixed(2)}%
-          </div>
         </div>
         
         <div className="metric-card">
