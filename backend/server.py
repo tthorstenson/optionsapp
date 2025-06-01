@@ -46,6 +46,7 @@ class StrategyParams(BaseModel):
     loss_limit: float = 2.0
     strategy_type: str = "weekly"  # weekly, monthly, rolling
     entry_day: str = "Monday"  # Monday, Tuesday, etc.
+    shares_owned: int = 1000  # Number of underlying shares owned
 
 class BacktestRequest(BaseModel):
     ticker: str
