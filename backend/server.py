@@ -425,7 +425,7 @@ class CoveredCallBacktester:
                     option_liability = current_option_price * position['contracts'] * 100
                     current_option_liability += option_liability
                     # P&L is premium received minus current option value
-                    unrealized_options_pnl += position['premium_received'] - option_liability
+                    unrealized_options_pnl += position.get('premium_received', 0) - option_liability
         
         return {
             'total_premium_collected': total_premium_collected,
