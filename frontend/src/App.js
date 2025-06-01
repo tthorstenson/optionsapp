@@ -313,7 +313,7 @@ function App() {
           </div>
           <div className="strategy-comparison">
             <div className="strategy-card buy-hold">
-              <h4>📈 Buy & Hold Only</h4>
+              <h4>Buy & Hold Only</h4>
               <div className="strategy-metrics">
                 <div className="metric-value">
                   {buyHoldComparison.buy_and_hold.return_percentage.toFixed(2)}%
@@ -326,7 +326,7 @@ function App() {
             </div>
             
             <div className="strategy-card covered-calls">
-              <h4>🎯 Covered Calls</h4>
+              <h4>Covered Calls</h4>
               <div className="strategy-metrics">
                 <div className="metric-value positive">
                   {buyHoldComparison.covered_calls.return_percentage.toFixed(2)}%
@@ -343,7 +343,7 @@ function App() {
             </div>
             
             <div className="strategy-card outperformance">
-              <h4>🚀 Outperformance</h4>
+              <h4>Outperformance</h4>
               <div className="strategy-metrics">
                 <div className={`metric-value ${buyHoldComparison.comparison.outperformance_percentage >= 0 ? 'positive' : 'negative'}`}>
                   {buyHoldComparison.comparison.outperformance_percentage >= 0 ? '+' : ''}{buyHoldComparison.comparison.outperformance_percentage.toFixed(2)}%
