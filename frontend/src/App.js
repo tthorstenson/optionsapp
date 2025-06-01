@@ -794,7 +794,7 @@ function App() {
             
             {comparisonResults.length > 0 && (
               <div className="comparison-table">
-                <h3>Performance Comparison</h3>
+                <h3>Performance</h3>
                 <table>
                   <thead>
                     <tr>
