@@ -661,35 +661,6 @@ function App() {
                         </select>
                       </div>
                     </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Profit Target (%)</label>
-                        <input
-                          type="number"
-                          name="strategy_params.profit_target"
-                          value={backtestForm.strategy_params.profit_target}
-                          onChange={handleInputChange}
-                          className="form-input"
-                          step="0.01"
-                          min="0.1"
-                          max="1.0"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Loss Limit (%)</label>
-                        <input
-                          type="number"
-                          name="strategy_params.loss_limit"
-                          value={backtestForm.strategy_params.loss_limit}
-                          onChange={handleInputChange}
-                          className="form-input"
-                          step="0.1"
-                          min="1.0"
-                          max="5.0"
-                        />
-                      </div>
-                    </div>
                   </div>
 
                   <button 
