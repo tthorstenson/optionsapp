@@ -546,6 +546,15 @@ body {
   background: rgba(0, 0, 0, 0.2);
 }
 
+.modern-chart-container {
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
 .chart-placeholder {
   height: 400px;
   display: flex;
