@@ -490,6 +490,56 @@ class CoveredCallBacktester:
             })
         return formatted_trades
     
+    def handle_share_repurchases(self, current_date: str, current_price: float, ticker: str, strategy_params: StrategyParams):
+        """Handle repurchasing shares that were called away the previous trading day"""
+        # Look for trades from yesterday that need repurchasing
+        yesterday_assignments = [
+            trade for trade in self.closed_trades 
+            if trade.get('repurchase_needed') and not trade.get('repurchased')
+        ]
+        
+        for assignment in yesterday_assignments:
+            shares_to_repurchase = assignment['shares_called_away']
+            if shares_to_repurchase > 0:
+                
+                # Calculate repurchase cost at current market price
+                repurchase_cost = shares_to_repurchase * current_price
+                
+                # Check if we have enough cash (from assignment proceeds + other cash)
+                if self.current_cash >= repurchase_cost:
+                    # Repurchase the shares
+                    self.current_cash -= repurchase_cost
+                    self.stock_positions[ticker]['shares'] += shares_to_repurchase
+                    
+                    # Record the repurchase transaction
+                    repurchase_trade = {
+                        'id': str(uuid.uuid4()),
+                        'open_date': current_date,
+                        'close_date': current_date,
+                        'strategy': 'share_repurchase',
+                        'shares_repurchased': shares_to_repurchase,
+                        'repurchase_price': current_price,
+                        'repurchase_cost': repurchase_cost,
+                        'original_assignment_strike': assignment['strike'],
+                        'assignment_date': assignment['close_date'],
+                        'net_assignment_cost': repurchase_cost - assignment['assigned_proceeds'],
+                        'related_to': assignment['id']
+                    }
+                    
+                    self.closed_trades.append(repurchase_trade)
+                    
+                    # Mark the original assignment as repurchased
+                    assignment['repurchased'] = True
+                    assignment['repurchase_date'] = current_date
+                    assignment['repurchase_cost'] = repurchase_cost
+                    assignment['net_assignment_impact'] = assignment['assigned_proceeds'] - repurchase_cost
+                    
+                else:
+                    # Not enough cash to repurchase - continue with reduced position
+                    # In reality, the user would need to add more capital or reduce strategy
+                    assignment['repurchased'] = False
+                    assignment['repurchase_status'] = 'insufficient_cash'
+    
     def calculate_buy_and_hold_comparison(self, ticker: str, stock_data: List[Dict], strategy_params: StrategyParams):
         """Calculate performance if just holding the stock without covered calls"""
         if not stock_data:
