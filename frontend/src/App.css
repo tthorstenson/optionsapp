@@ -476,17 +476,24 @@ body {
 }
 
 .metric-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  background: rgba(15, 20, 25, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
   padding: 1rem;
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .metric-card h4 {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #64748b;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
@@ -495,29 +502,32 @@ body {
 .metric-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #ffffff;
 }
 
 .metric-value.positive {
-  color: #059669;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
 .metric-value.negative {
-  color: #dc2626;
+  color: #ff4444;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
 }
 
 /* Performance Chart */
 .performance-chart {
-  background: white;
-  border-radius: 0.5rem;
+  background: rgba(15, 20, 25, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .performance-chart h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
@@ -526,7 +536,8 @@ body {
   height: 400px;
   border-radius: 0.5rem;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .chart-placeholder {
@@ -535,8 +546,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #64748b;
-  background: #f8fafc;
+  color: #94a3b8;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* Chart Legend */
@@ -546,7 +557,7 @@ body {
   gap: 1rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .legend-item {
@@ -564,25 +575,26 @@ body {
 
 .legend-return {
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
 }
 
 /* Strategy Library */
 .strategies-section {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  background: rgba(15, 20, 25, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   padding: 1.5rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .strategies-section h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .strategies-grid {
@@ -592,16 +604,16 @@ body {
 }
 
 .strategy-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 0.75rem;
   padding: 1.25rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .strategy-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
 }
 
 .strategy-header {
@@ -614,7 +626,7 @@ body {
 .strategy-header h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-right: 1rem;
 }
 
@@ -625,30 +637,31 @@ body {
 
 .strategy-details p {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: 0.25rem;
 }
 
 .strategy-details strong {
-  color: #374151;
+  color: #ffffff;
 }
 
 /* Comparison Section */
 .comparison-section {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  background: rgba(15, 20, 25, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   padding: 1.5rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .comparison-section h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .comparison-controls {
@@ -665,8 +678,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
 }
@@ -680,13 +693,13 @@ body {
 .comparison-name {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #1e293b;
+  color: #ffffff;
 }
 
 .comparison-return {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #059669;
+  color: #00ff88;
 }
 
 /* Comparison Table */
@@ -698,7 +711,7 @@ body {
 .comparison-table h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
@@ -712,14 +725,14 @@ body {
 .comparison-table td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .comparison-table th {
-  background: #f8fafc;
+  background: rgba(0, 0, 0, 0.2);
   font-weight: 600;
-  color: #374151;
-  border-top: 1px solid #e2e8f0;
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .strategy-cell {
@@ -737,21 +750,22 @@ body {
 .metric-cell {
   font-weight: 500;
   text-align: right;
+  color: #ffffff;
 }
 
 .metric-cell.positive {
-  color: #059669;
+  color: #00ff88;
 }
 
 .metric-cell.negative {
-  color: #dc2626;
+  color: #ff4444;
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .empty-state p {
@@ -760,6 +774,10 @@ body {
 
 .text-sm {
   font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
 }
 
 /* Responsive Design */
@@ -810,5 +828,10 @@ body {
   
   .strategy-actions {
     align-self: stretch;
+  }
+  
+  .price-range-display {
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 }
