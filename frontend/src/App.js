@@ -760,7 +760,7 @@ function App() {
 
         {activeTab === 'comparison' && (
           <div className="comparison-section">
-            <h2>Strategy Comparison</h2>
+            <h2>Comparison</h2>
             
             {comparisonResults.length > 0 && (
               <div className="comparison-controls">
