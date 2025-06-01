@@ -446,16 +446,6 @@ function App() {
         </div>
         
         <div className="metric-card">
-          <h4>Repurchase Cost</h4>
-          <div className="metric-value negative">
-            ${coveredCallMetrics.total_repurchase_cost?.toLocaleString() || 'N/A'}
-          </div>
-          <small className="text-xs text-gray-600">
-            Net assignment impact: ${coveredCallMetrics.net_assignment_impact?.toLocaleString() || 'N/A'}
-          </small>
-        </div>
-        
-        <div className="metric-card">
           <h4>Final Price</h4>
           <div className="metric-value">
             ${underlyingSummary?.final_price?.toFixed(2) || 'N/A'}
