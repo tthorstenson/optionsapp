@@ -371,17 +371,26 @@ class CoveredCallBacktester:
         suitable = []
         
         for option in options:
-            # Filter by DTE
-            if abs(option['dte'] - strategy_params.dte_target) > 7:
-                continue
+            # Filter by DTE range (more flexible)
+            dte_diff = abs(option['dte'] - strategy_params.dte_target)
+            if strategy_params.dte_target <= 7:  # Weekly options
+                if dte_diff > 3:  # Within 3 days for weekly
+                    continue
+            else:  # Monthly options
+                if dte_diff > 14:  # Within 2 weeks for monthly
+                    continue
             
-            # Filter by delta range
+            # Filter by delta range (more flexible)
             delta_diff = abs(option['delta'] - strategy_params.delta_target)
-            if delta_diff > 0.05:  # Within 5 delta points
+            if delta_diff > 0.1:  # Within 10 delta points
                 continue
             
-            # Must be OTM call
-            if option['strike'] <= stock_price:
+            # Must be OTM call (but allow closer strikes)
+            if option['strike'] <= stock_price * 1.01:  # Allow 1% OTM minimum
+                continue
+            
+            # Must have reasonable option price
+            if option['option_price'] < 0.50:  # Minimum $0.50 premium
                 continue
             
             suitable.append(option)
