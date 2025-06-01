@@ -743,8 +743,8 @@ class CoveredCallBacktester:
     def check_profit_loss_targets(self, position: Dict, current_option_price: float, stock_price: float):
         """Check if position hits profit/loss targets"""
         # Calculate current P&L on option
-        option_pnl = position['premium_received'] - (current_option_price * position['shares'])
-        profit_pct = option_pnl / position['premium_received']
+        option_pnl = position.get('premium_received', 0) - (current_option_price * position['shares'])
+        profit_pct = option_pnl / position.get('premium_received', 0)
         
         # Close if profit target hit (e.g., 50% of premium captured)
         if profit_pct >= 0.5:  # 50% profit target
