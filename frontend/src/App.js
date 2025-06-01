@@ -285,101 +285,158 @@ function App() {
     );
   };
 
-  const MetricsGrid = ({ metrics, coveredCallMetrics, underlyingSummary }) => (
-    <div className="metrics-grid">
-      <div className="metric-card">
-        <h4>Total Return</h4>
-        <div className="metric-value">
-          {(metrics.total_return * 100).toFixed(2)}%
+  const MetricsGrid = ({ metrics, coveredCallMetrics, underlyingSummary, buyHoldComparison }) => (
+    <div className="metrics-section">
+      {/* Strategy Comparison */}
+      {buyHoldComparison && (
+        <div className="comparison-cards">
+          <h3>Strategy Comparison</h3>
+          <div className="strategy-comparison">
+            <div className="strategy-card buy-hold">
+              <h4>📈 Buy & Hold Only</h4>
+              <div className="strategy-metrics">
+                <div className="metric-value">
+                  {buyHoldComparison.buy_and_hold.return_percentage.toFixed(2)}%
+                </div>
+                <div className="metric-label">Total Return</div>
+                <div className="metric-detail">
+                  ${buyHoldComparison.buy_and_hold.total_return.toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
+            <div className="strategy-card covered-calls">
+              <h4>🎯 Covered Calls</h4>
+              <div className="strategy-metrics">
+                <div className="metric-value positive">
+                  {buyHoldComparison.covered_calls.return_percentage.toFixed(2)}%
+                </div>
+                <div className="metric-label">Total Return</div>
+                <div className="metric-detail">
+                  ${buyHoldComparison.covered_calls.total_return.toLocaleString()}
+                </div>
+                <div className="metric-breakdown">
+                  Underlying: ${buyHoldComparison.covered_calls.underlying_return.toLocaleString()} + 
+                  Premium: ${buyHoldComparison.covered_calls.options_premium.toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
+            <div className="strategy-card outperformance">
+              <h4>🚀 Outperformance</h4>
+              <div className="strategy-metrics">
+                <div className={`metric-value ${buyHoldComparison.comparison.outperformance_percentage >= 0 ? 'positive' : 'negative'}`}>
+                  {buyHoldComparison.comparison.outperformance_percentage >= 0 ? '+' : ''}{buyHoldComparison.comparison.outperformance_percentage.toFixed(2)}%
+                </div>
+                <div className="metric-label">Enhanced Return</div>
+                <div className="metric-detail">
+                  ${buyHoldComparison.comparison.outperformance_dollars.toLocaleString()}
+                </div>
+                <div className="metric-breakdown">
+                  Winner: {buyHoldComparison.comparison.better_strategy}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
       
-      <div className="metric-card">
-        <h4>Underlying P&L</h4>
-        <div className="metric-value">
-          ${underlyingSummary?.underlying_pnl?.toLocaleString() || 'N/A'}
+      {/* Detailed Metrics */}
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <h4>Total Return</h4>
+          <div className="metric-value">
+            {(metrics.total_return * 100).toFixed(2)}%
+          </div>
         </div>
-        <small className="text-xs text-gray-600">
-          {underlyingSummary?.shares_owned} shares
-        </small>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Options P&L</h4>
-        <div className="metric-value positive">
-          ${coveredCallMetrics.total_premium_collected?.toLocaleString() || 'N/A'}
+        
+        <div className="metric-card">
+          <h4>Your Cost Basis</h4>
+          <div className="metric-value">
+            ${underlyingSummary?.entry_price?.toFixed(2) || 'N/A'}
+          </div>
+          <small className="text-xs text-gray-600">
+            Per share
+          </small>
         </div>
-        <small className="text-xs text-gray-600">
-          Premium collected
-        </small>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Sharpe Ratio</h4>
-        <div className="metric-value">
-          {metrics.sharpe_ratio?.toFixed(2) || 'N/A'}
+        
+        <div className="metric-card">
+          <h4>Underlying P&L</h4>
+          <div className="metric-value">
+            ${underlyingSummary?.underlying_pnl?.toLocaleString() || 'N/A'}
+          </div>
+          <small className="text-xs text-gray-600">
+            {underlyingSummary?.shares_owned} shares
+          </small>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Max Drawdown</h4>
-        <div className="metric-value negative">
-          {(metrics.max_drawdown * 100).toFixed(2)}%
+        
+        <div className="metric-card">
+          <h4>Options Premium</h4>
+          <div className="metric-value positive">
+            ${coveredCallMetrics.total_premium_collected?.toLocaleString() || 'N/A'}
+          </div>
+          <small className="text-xs text-gray-600">
+            {coveredCallMetrics.total_trades} trades
+          </small>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Win Rate</h4>
-        <div className="metric-value">
-          {(coveredCallMetrics.win_rate * 100).toFixed(1)}%
+        
+        <div className="metric-card">
+          <h4>Sharpe Ratio</h4>
+          <div className="metric-value">
+            {metrics.sharpe_ratio?.toFixed(2) || 'N/A'}
+          </div>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Total Trades</h4>
-        <div className="metric-value">
-          {coveredCallMetrics.total_trades}
+        
+        <div className="metric-card">
+          <h4>Max Drawdown</h4>
+          <div className="metric-value negative">
+            {(metrics.max_drawdown * 100).toFixed(2)}%
+          </div>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>% Expired Worthless</h4>
-        <div className="metric-value positive">
-          {(coveredCallMetrics.pct_expired_worthless * 100).toFixed(1)}%
+        
+        <div className="metric-card">
+          <h4>Win Rate</h4>
+          <div className="metric-value">
+            {(coveredCallMetrics.win_rate * 100).toFixed(1)}%
+          </div>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>% Called Away</h4>
-        <div className="metric-value">
-          {(coveredCallMetrics.pct_called_away * 100).toFixed(1)}%
+        
+        <div className="metric-card">
+          <h4>Total Trades</h4>
+          <div className="metric-value">
+            {coveredCallMetrics.total_trades}
+          </div>
         </div>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Entry Price</h4>
-        <div className="metric-value">
-          ${underlyingSummary?.entry_price?.toFixed(2) || 'N/A'}
+        
+        <div className="metric-card">
+          <h4>% Expired Worthless</h4>
+          <div className="metric-value positive">
+            {(coveredCallMetrics.pct_expired_worthless * 100).toFixed(1)}%
+          </div>
         </div>
-        <small className="text-xs text-gray-600">
-          Underlying
-        </small>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Final Price</h4>
-        <div className="metric-value">
-          ${underlyingSummary?.final_price?.toFixed(2) || 'N/A'}
+        
+        <div className="metric-card">
+          <h4>% Called Away</h4>
+          <div className="metric-value">
+            {(coveredCallMetrics.pct_called_away * 100).toFixed(1)}%
+          </div>
         </div>
-        <small className="text-xs text-gray-600">
-          Underlying
-        </small>
-      </div>
-      
-      <div className="metric-card">
-        <h4>Underlying Return</h4>
-        <div className="metric-value">
-          {((underlyingSummary?.underlying_return || 0) * 100).toFixed(2)}%
+        
+        <div className="metric-card">
+          <h4>Final Price</h4>
+          <div className="metric-value">
+            ${underlyingSummary?.final_price?.toFixed(2) || 'N/A'}
+          </div>
+          <small className="text-xs text-gray-600">
+            Current market
+          </small>
+        </div>
+        
+        <div className="metric-card">
+          <h4>Underlying Return</h4>
+          <div className="metric-value">
+            {((underlyingSummary?.underlying_return || 0) * 100).toFixed(2)}%
+          </div>
         </div>
       </div>
     </div>
