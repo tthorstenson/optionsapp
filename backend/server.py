@@ -658,7 +658,7 @@ class CoveredCallBacktester:
             shares_called_away = 0
         
         # Calculate total option P&L
-        option_pnl = position['premium_received']  # We keep the full premium
+        option_pnl = position.get('premium_received', 0)  # We keep the full premium
         
         trade = {
             'id': position['id'],
