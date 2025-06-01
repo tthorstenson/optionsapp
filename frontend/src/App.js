@@ -19,7 +19,8 @@ function App() {
       profit_target: 0.50,
       loss_limit: 2.0,
       strategy_type: 'weekly',
-      entry_day: 'Monday'
+      entry_day: 'Monday',
+      shares_owned: 1000
     }
   });
   
