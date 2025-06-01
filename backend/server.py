@@ -329,8 +329,8 @@ class CoveredCallBacktester:
         
         return min(0.99, max(0.01, delta))
     
-    def should_open_position(self, current_date: str, strategy_params: StrategyParams) -> bool:
-        """Determine if we should open a new position"""
+    def should_open_option_position(self, current_date: str, strategy_params: StrategyParams, max_contracts: int) -> bool:
+        """Determine if we should open a new option position"""
         # Check if it's the right day of week
         date_obj = datetime.strptime(current_date, '%Y-%m-%d')
         day_name = date_obj.strftime('%A')
@@ -338,13 +338,14 @@ class CoveredCallBacktester:
         if strategy_params.entry_day != "Any" and day_name != strategy_params.entry_day:
             return False
         
-        # Check if we have enough capital and not too many positions
-        open_positions = len([p for p in self.positions if p['status'] == 'open'])
-        stock_cost = 100 * 100  # Assume $100 stock price and 100 shares for capital check
-        return self.current_capital >= stock_cost and open_positions < 5
+        # Check how many contracts are already open
+        open_contracts = len([p for p in self.option_positions if p['status'] == 'open'])
+        
+        # Don't exceed our share capacity
+        return open_contracts < max_contracts
     
-    def open_covered_call(self, current_date: str, stock_price: float, options_data: Dict, strategy_params: StrategyParams):
-        """Open a new covered call position"""
+    def open_covered_call_option(self, current_date: str, stock_price: float, options_data: Dict, strategy_params: StrategyParams):
+        """Open a new covered call option position"""
         if current_date not in options_data:
             return False
         
@@ -359,30 +360,87 @@ class CoveredCallBacktester:
         best_option = min(suitable_options, 
                          key=lambda x: abs(x['delta'] - strategy_params.delta_target))
         
-        # Calculate position size  
-        shares_per_contract = 100  # Use 100 shares per contract
-        stock_cost = stock_price * shares_per_contract
-        option_premium = best_option['option_price'] * shares_per_contract
+        # Each contract represents 100 shares
+        contracts_to_sell = 1  # Sell one contract at a time
+        option_premium = best_option['option_price'] * contracts_to_sell * 100  # 100 shares per contract
         
-        if self.current_capital >= stock_cost:
-            position = {
-                'id': str(uuid.uuid4()),
-                'open_date': current_date,
-                'stock_price': stock_price,
-                'shares': shares_per_contract,
-                'strike': best_option['strike'],
-                'expiration': best_option['expiration'],
-                'premium_received': option_premium,
-                'delta': best_option['delta'],
-                'dte_at_open': best_option['dte'],
-                'status': 'open'
-            }
-            
-            self.positions.append(position)
-            self.current_capital -= stock_cost
-            self.current_capital += option_premium
-            return True
-        return False
+        position = {
+            'id': str(uuid.uuid4()),
+            'open_date': current_date,
+            'contracts': contracts_to_sell,
+            'strike': best_option['strike'],
+            'expiration': best_option['expiration'],
+            'premium_received': option_premium,
+            'delta': best_option['delta'],
+            'dte_at_open': best_option['dte'],
+            'status': 'open',
+            'entry_stock_price': stock_price
+        }
+        
+        self.option_positions.append(position)
+        self.current_cash += option_premium  # Collect premium
+        return True
+    
+    def calculate_underlying_pnl(self, ticker: str):
+        """Calculate P&L on underlying stock position"""
+        if ticker not in self.stock_positions:
+            return {'unrealized_pnl': 0, 'total_value': 0}
+        
+        position = self.stock_positions[ticker]
+        unrealized_pnl = (position['current_price'] - position['entry_price']) * position['shares']
+        total_value = position['current_price'] * position['shares']
+        
+        return {
+            'unrealized_pnl': unrealized_pnl,
+            'total_value': total_value,
+            'shares': position['shares'],
+            'entry_price': position['entry_price'],
+            'current_price': position['current_price']
+        }
+    
+    def calculate_options_pnl(self, current_date: str, options_data: Dict):
+        """Calculate P&L on option positions"""
+        total_premium_collected = sum(t['premium_received'] for t in self.closed_trades)
+        total_premium_collected += sum(p['premium_received'] for p in self.option_positions if p['status'] == 'open')
+        
+        # Calculate current value of open options (liability)
+        current_option_liability = 0
+        unrealized_options_pnl = 0
+        
+        for position in self.option_positions:
+            if position['status'] == 'open' and current_date in options_data:
+                current_option_price = self.get_current_option_price(position, options_data[current_date])
+                if current_option_price:
+                    option_liability = current_option_price * position['contracts'] * 100
+                    current_option_liability += option_liability
+                    # P&L is premium received minus current option value
+                    unrealized_options_pnl += position['premium_received'] - option_liability
+        
+        return {
+            'total_premium_collected': total_premium_collected,
+            'current_liability': current_option_liability,
+            'unrealized_pnl': unrealized_options_pnl,
+            'total_value': -current_option_liability  # Negative because it's a liability
+        }
+    
+    def calculate_underlying_summary(self, ticker: str, final_price: float):
+        """Calculate summary of underlying position performance"""
+        if ticker not in self.stock_positions:
+            return {}
+        
+        position = self.stock_positions[ticker]
+        total_pnl = (final_price - position['entry_price']) * position['shares']
+        total_return = total_pnl / (position['entry_price'] * position['shares'])
+        
+        return {
+            'ticker': ticker,
+            'shares_owned': position['shares'],
+            'entry_price': position['entry_price'],
+            'final_price': final_price,
+            'underlying_pnl': total_pnl,
+            'underlying_return': total_return,
+            'position_value': final_price * position['shares']
+        }
     
     def find_suitable_options(self, options: List[Dict], stock_price: float, strategy_params: StrategyParams):
         """Find options matching strategy criteria"""
