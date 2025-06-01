@@ -611,6 +611,7 @@ function App() {
                   <MetricsGrid 
                     metrics={backtestResults.performance_metrics}
                     coveredCallMetrics={backtestResults.covered_call_metrics}
+                    underlyingSummary={backtestResults.underlying_summary}
                   />
                   
                   <PerformanceChart data={backtestResults} />
