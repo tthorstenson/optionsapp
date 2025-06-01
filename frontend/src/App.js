@@ -501,10 +501,10 @@ function App() {
           <div className="backtest-section">
             <div className="content-grid">
               <div className="form-section">
-                <h2>Strategy Configuration</h2>
+                <h2>Strategy</h2>
                 <form onSubmit={runBacktest} className="backtest-form">
                   <div className="form-group">
-                    <label>Ticker Symbol</label>
+                    <label>Ticker</label>
                     <input
                       type="text"
                       name="ticker"
@@ -517,7 +517,7 @@ function App() {
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Start Date</label>
+                      <label>Start</label>
                       <input
                         type="date"
                         name="start_date"
@@ -528,7 +528,7 @@ function App() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>End Date</label>
+                      <label>End</label>
                       <input
                         type="date"
                         name="end_date"
@@ -553,7 +553,7 @@ function App() {
                   </div>
 
                   <div className="strategy-params">
-                    <h3>Strategy Parameters</h3>
+                    <h3>Parameters</h3>
                     
                     <div className="form-row">
                       <div className="form-group">
