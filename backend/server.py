@@ -82,20 +82,33 @@ def calculate_dte(expiration_date: str, current_date: str) -> int:
 class CoveredCallBacktester:
     def __init__(self, initial_capital: float = 100000):
         self.initial_capital = initial_capital
-        self.current_capital = initial_capital
-        self.positions = []
+        self.current_cash = initial_capital  # Cash not tied up in stock
+        self.stock_positions = {}  # Track underlying stock holdings
+        self.option_positions = []  # Track option contracts
         self.closed_trades = []
         self.performance_metrics = {}
+        self.underlying_entry_price = None  # Price when we "bought" the underlying
         
     def run_backtest(self, ticker: str, start_date: str, end_date: str, strategy_params: StrategyParams):
-        """Run covered call backtest"""
+        """Run covered call backtest with proper underlying tracking"""
         try:
             # Get stock data
             stock_data = self.get_stock_data(ticker, start_date, end_date)
             if not stock_data:
                 return {"error": "No stock data available"}
             
-            # Get options data (simulated for now due to API limitations)
+            # Initialize underlying position at start price
+            self.underlying_entry_price = stock_data[0]['close']
+            self.stock_positions[ticker] = {
+                'shares': strategy_params.shares_owned,
+                'entry_price': self.underlying_entry_price,
+                'current_price': self.underlying_entry_price
+            }
+            
+            # Calculate maximum contracts we can sell
+            max_contracts = strategy_params.shares_owned // 100
+            
+            # Get options data
             options_data = self.simulate_options_data(stock_data, strategy_params)
             
             results = []
@@ -108,34 +121,42 @@ class CoveredCallBacktester:
                     
                 current_price = current_stock_data['close']
                 
-                # Manage existing positions
-                self.manage_positions(current_date, current_price, options_data)
+                # Update underlying position
+                self.stock_positions[ticker]['current_price'] = current_price
                 
-                # Look for new opportunities
-                if self.should_open_position(current_date, strategy_params):
-                    position_opened = self.open_covered_call(current_date, current_price, options_data, strategy_params)
+                # Manage existing option positions
+                self.manage_option_positions(current_date, current_price, options_data)
                 
-                # Calculate portfolio value
-                portfolio_value = self.calculate_portfolio_value(current_date, current_price, options_data)
+                # Look for new option opportunities
+                if self.should_open_option_position(current_date, strategy_params, max_contracts):
+                    self.open_covered_call_option(current_date, current_price, options_data, strategy_params)
+                
+                # Calculate P&L components
+                underlying_pnl = self.calculate_underlying_pnl(ticker)
+                options_pnl = self.calculate_options_pnl(current_date, options_data)
+                total_portfolio_value = self.current_cash + underlying_pnl['unrealized_pnl'] + options_pnl['total_value']
                 
                 results.append({
                     'date': current_date,
                     'stock_price': current_price,
-                    'portfolio_value': portfolio_value,
-                    'cash': self.current_capital,
-                    'positions_count': len([p for p in self.positions if p['status'] == 'open']),
-                    'total_premium_collected': sum(t['premium_received'] for t in self.closed_trades),
-                    'trades_count': len(self.closed_trades)
+                    'portfolio_value': total_portfolio_value,
+                    'cash': self.current_cash,
+                    'underlying_pnl': underlying_pnl['unrealized_pnl'],
+                    'options_pnl': options_pnl['unrealized_pnl'],
+                    'total_premium_collected': options_pnl['total_premium_collected'],
+                    'open_contracts': len([p for p in self.option_positions if p['status'] == 'open']),
+                    'total_trades': len(self.closed_trades)
                 })
             
             # Calculate performance metrics
-            self.performance_metrics = self.calculate_performance_metrics(results)
+            self.performance_metrics = self.calculate_performance_metrics(results, ticker)
             
             return {
                 'results': results,
                 'performance_metrics': self.performance_metrics,
                 'trades': self.closed_trades,
-                'covered_call_metrics': self.calculate_covered_call_metrics()
+                'covered_call_metrics': self.calculate_covered_call_metrics(),
+                'underlying_summary': self.calculate_underlying_summary(ticker, current_price)
             }
             
         except Exception as e:
