@@ -211,18 +211,19 @@ class CoveredCallBacktester:
         """Generate realistic option chain for a given stock price and date"""
         options = []
         
-        # Generate strikes around current price
+        # Generate strikes around current price (more granular)
         strikes = []
-        for i in range(-10, 11):  # 20 strikes
-            strike = round(stock_price * (1 + i * 0.05), 0)  # 5% intervals
-            strikes.append(strike)
+        for i in range(-15, 16):  # 30 strikes
+            strike = round(stock_price * (1 + i * 0.025), 0)  # 2.5% intervals
+            if strike > 0:
+                strikes.append(strike)
         
         # Generate different expiration dates
         current_dt = datetime.strptime(current_date, '%Y-%m-%d')
         
         expirations = []
-        # Weekly options (Fridays)
-        for week in range(1, 9):  # 8 weeks out
+        # Weekly options (every Friday)
+        for week in range(1, 12):  # 12 weeks out
             exp_date = current_dt + timedelta(days=7*week)
             # Find next Friday
             days_to_friday = (4 - exp_date.weekday()) % 7
@@ -231,15 +232,16 @@ class CoveredCallBacktester:
             exp_date += timedelta(days=days_to_friday)
             expirations.append(exp_date.strftime('%Y-%m-%d'))
         
-        # Monthly options (3rd Friday)
-        for month in range(1, 13):  # 12 months out
-            exp_date = current_dt.replace(day=15) + timedelta(days=30*month)
+        # Monthly options 
+        for month in range(1, 6):  # 6 months out
+            exp_date = current_dt + timedelta(days=30*month)
             # Find 3rd Friday
-            days_to_friday = (4 - exp_date.weekday()) % 7
-            exp_date += timedelta(days=days_to_friday)
-            if exp_date.day < 15:
-                exp_date += timedelta(days=7)
-            expirations.append(exp_date.strftime('%Y-%m-%d'))
+            first_day = exp_date.replace(day=1)
+            # Find first Friday
+            first_friday = first_day + timedelta(days=(4 - first_day.weekday()) % 7)
+            # Third Friday is first Friday + 14 days
+            third_friday = first_friday + timedelta(days=14)
+            expirations.append(third_friday.strftime('%Y-%m-%d'))
         
         # Remove duplicates and sort
         expirations = sorted(list(set(expirations)))
@@ -260,27 +262,34 @@ class CoveredCallBacktester:
                 # Simplified Black-Scholes approximation
                 intrinsic_value = max(0, stock_price - strike)  # Call option
                 
-                # Estimate implied volatility based on moneyness and time
-                iv = 0.20 + abs(moneyness - 1.0) * 0.1  # Base IV of 20%
+                # Better implied volatility estimation
+                if moneyness >= 1.05:  # 5% OTM
+                    iv = 0.25 + (moneyness - 1.0) * 0.2  # Higher IV for farther OTM
+                elif moneyness >= 0.95:  # Near the money
+                    iv = 0.30 + abs(moneyness - 1.0) * 0.5
+                else:  # ITM
+                    iv = 0.20 + (1.0 - moneyness) * 0.3
                 
-                # Simplified option price
-                option_price = intrinsic_value + (stock_price * iv * np.sqrt(time_value) * 0.4)
-                option_price = max(0.01, option_price)  # Minimum $0.01
+                # Time value component
+                time_premium = stock_price * iv * np.sqrt(time_value) * 0.4
+                option_price = intrinsic_value + time_premium
+                option_price = max(0.10, option_price)  # Minimum $0.10
                 
-                # Calculate Greeks (simplified)
+                # Calculate Greeks (improved)
                 delta = self.calculate_delta(stock_price, strike, dte, iv)
-                theta = -option_price * 0.02 * (30 / dte) if dte > 0 else 0  # Simplified theta
                 
-                options.append({
-                    'strike': strike,
-                    'expiration': expiration,
-                    'dte': dte,
-                    'option_price': round(option_price, 2),
-                    'delta': round(delta, 3),
-                    'theta': round(theta, 3),
-                    'iv': round(iv, 3),
-                    'volume': np.random.randint(10, 1000)
-                })
+                # Only include options with reasonable parameters
+                if 0.05 <= delta <= 0.95 and option_price >= 0.50:
+                    options.append({
+                        'strike': strike,
+                        'expiration': expiration,
+                        'dte': dte,
+                        'option_price': round(option_price, 2),
+                        'delta': round(delta, 3),
+                        'theta': round(-option_price * 0.02 * (30 / max(dte, 1)), 3),
+                        'iv': round(iv, 3),
+                        'volume': np.random.randint(50, 2000)
+                    })
         
         return options
     
