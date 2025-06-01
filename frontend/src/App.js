@@ -290,7 +290,7 @@ function App() {
       {/* Strategy Comparison */}
       {buyHoldComparison && (
         <div className="comparison-cards">
-          <h3>Strategy Comparison</h3>
+          <h3>Comparison</h3>
           
           {/* Stock Price Range */}
           <div className="price-range-display">
