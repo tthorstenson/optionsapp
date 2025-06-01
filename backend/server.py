@@ -718,7 +718,7 @@ class CoveredCallBacktester:
             'close_date': datetime.now().strftime('%Y-%m-%d'),
             'contracts': position['contracts'],
             'strategy': 'covered_call',
-            'premium_received': position['premium_received'],
+            'premium_received': position.get('premium_received', 0),
             'option_buyback_cost': option_buyback_cost,
             'option_pnl': option_pnl,
             'close_reason': reason,
