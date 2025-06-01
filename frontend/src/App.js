@@ -440,6 +440,19 @@ function App() {
           <div className="metric-value">
             {(coveredCallMetrics.pct_called_away * 100).toFixed(1)}%
           </div>
+          <small className="text-xs text-gray-600">
+            {coveredCallMetrics.assignments_repurchased || 0} of {coveredCallMetrics.total_assignments || 0} repurchased
+          </small>
+        </div>
+        
+        <div className="metric-card">
+          <h4>Repurchase Cost</h4>
+          <div className="metric-value negative">
+            ${coveredCallMetrics.total_repurchase_cost?.toLocaleString() || 'N/A'}
+          </div>
+          <small className="text-xs text-gray-600">
+            Net assignment impact: ${coveredCallMetrics.net_assignment_impact?.toLocaleString() || 'N/A'}
+          </small>
         </div>
         
         <div className="metric-card">
