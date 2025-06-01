@@ -685,9 +685,9 @@ function App() {
                     </button>
                   </div>
                   
-                  {/* Debug info */}
+                  {/* Breakdown info */}
                   <div style={{ backgroundColor: '#f0f0f0', padding: '10px', marginBottom: '10px', fontSize: '12px' }}>
-                    <strong>Debug:</strong> Results received - Total Return: {(backtestResults.performance_metrics?.total_return * 100).toFixed(2)}%, 
+                    <strong>Breakdown:</strong> Results received - Total Return: {(backtestResults.performance_metrics?.total_return * 100).toFixed(2)}%, 
                     Total Trades: {backtestResults.covered_call_metrics?.total_trades || 'undefined'}, 
                     Underlying P&L: ${backtestResults.underlying_summary?.underlying_pnl?.toFixed(0) || 'N/A'}, 
                     Options Premium: ${backtestResults.covered_call_metrics?.total_premium_collected?.toFixed(0) || 'N/A'},
