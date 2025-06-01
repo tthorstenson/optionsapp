@@ -283,13 +283,33 @@ function App() {
     );
   };
 
-  const MetricsGrid = ({ metrics, coveredCallMetrics }) => (
+  const MetricsGrid = ({ metrics, coveredCallMetrics, underlyingSummary }) => (
     <div className="metrics-grid">
       <div className="metric-card">
         <h4>Total Return</h4>
         <div className="metric-value">
           {(metrics.total_return * 100).toFixed(2)}%
         </div>
+      </div>
+      
+      <div className="metric-card">
+        <h4>Underlying P&L</h4>
+        <div className="metric-value">
+          ${underlyingSummary?.underlying_pnl?.toLocaleString() || 'N/A'}
+        </div>
+        <small className="text-xs text-gray-600">
+          {underlyingSummary?.shares_owned} shares
+        </small>
+      </div>
+      
+      <div className="metric-card">
+        <h4>Options P&L</h4>
+        <div className="metric-value positive">
+          ${coveredCallMetrics.total_premium_collected?.toLocaleString() || 'N/A'}
+        </div>
+        <small className="text-xs text-gray-600">
+          Premium collected
+        </small>
       </div>
       
       <div className="metric-card">
@@ -335,9 +355,29 @@ function App() {
       </div>
       
       <div className="metric-card">
-        <h4>Total Premium</h4>
+        <h4>Entry Price</h4>
         <div className="metric-value">
-          ${coveredCallMetrics.total_premium_collected?.toLocaleString()}
+          ${underlyingSummary?.entry_price?.toFixed(2) || 'N/A'}
+        </div>
+        <small className="text-xs text-gray-600">
+          Underlying
+        </small>
+      </div>
+      
+      <div className="metric-card">
+        <h4>Final Price</h4>
+        <div className="metric-value">
+          ${underlyingSummary?.final_price?.toFixed(2) || 'N/A'}
+        </div>
+        <small className="text-xs text-gray-600">
+          Underlying
+        </small>
+      </div>
+      
+      <div className="metric-card">
+        <h4>Underlying Return</h4>
+        <div className="metric-value">
+          {((underlyingSummary?.underlying_return || 0) * 100).toFixed(2)}%
         </div>
       </div>
     </div>
