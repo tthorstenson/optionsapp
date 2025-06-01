@@ -475,20 +475,53 @@ function App() {
                   <div className="strategy-params">
                     <h3>Strategy Parameters</h3>
                     
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Shares Owned</label>
+                        <input
+                          type="number"
+                          name="strategy_params.shares_owned"
+                          value={backtestForm.strategy_params.shares_owned}
+                          onChange={handleInputChange}
+                          className="form-input"
+                          min="100"
+                          step="100"
+                          placeholder="e.g., 1000"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Your Cost Basis</label>
+                        <input
+                          type="number"
+                          name="strategy_params.underlying_cost_basis"
+                          value={backtestForm.strategy_params.underlying_cost_basis}
+                          onChange={handleInputChange}
+                          className="form-input"
+                          min="1"
+                          step="0.01"
+                          placeholder="e.g., 200.00"
+                        />
+                        <small className="text-xs text-gray-600 mt-1">
+                          Your actual purchase price per share
+                        </small>
+                      </div>
+                    </div>
+                    
                     <div className="form-group">
-                      <label>Shares Owned</label>
+                      <label>Max Contracts to Sell</label>
                       <input
                         type="number"
-                        name="strategy_params.shares_owned"
-                        value={backtestForm.strategy_params.shares_owned}
+                        name="strategy_params.max_contracts_to_sell"
+                        value={backtestForm.strategy_params.max_contracts_to_sell}
                         onChange={handleInputChange}
                         className="form-input"
-                        min="100"
-                        step="100"
-                        placeholder="e.g., 1000"
+                        min="1"
+                        max={Math.floor(backtestForm.strategy_params.shares_owned / 100)}
+                        step="1"
                       />
                       <small className="text-xs text-gray-600 mt-1">
-                        Maximum contracts: {Math.floor(backtestForm.strategy_params.shares_owned / 100)}
+                        Maximum possible: {Math.floor(backtestForm.strategy_params.shares_owned / 100)} contracts 
+                        (you own {backtestForm.strategy_params.shares_owned} shares)
                       </small>
                     </div>
                     
