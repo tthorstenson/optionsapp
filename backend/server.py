@@ -371,8 +371,6 @@ class CoveredCallBacktester:
         """Find options matching strategy criteria"""
         suitable = []
         
-        print(f"Searching {len(options)} options for stock price ${stock_price}, target delta {strategy_params.delta_target}, target DTE {strategy_params.dte_target}")
-        
         for option in options:
             # Filter by DTE range (very flexible)
             dte_diff = abs(option['dte'] - strategy_params.dte_target)
@@ -397,9 +395,7 @@ class CoveredCallBacktester:
                 continue
             
             suitable.append(option)
-            print(f"Found suitable option: Strike ${option['strike']}, Delta {option['delta']}, DTE {option['dte']}, Price ${option['option_price']}")
         
-        print(f"Found {len(suitable)} suitable options")
         return suitable
     
     def manage_positions(self, current_date: str, stock_price: float, options_data: Dict):
