@@ -129,18 +129,7 @@ class CoveredCallBacktester:
                 
                 # Look for new option opportunities
                 if self.should_open_option_position(current_date, strategy_params, max_contracts):
-                    print(f"Attempting to open position on {current_date}")
-                    position_opened = self.open_covered_call_option(current_date, current_price, options_data, strategy_params)
-                    if position_opened:
-                        print(f"✅ Opened option position on {current_date}")
-                    else:
-                        print(f"❌ Failed to open position on {current_date} - no suitable options")
-                else:
-                    # Debug why we can't open
-                    date_obj = datetime.strptime(current_date, '%Y-%m-%d')
-                    day_name = date_obj.strftime('%A')
-                    open_contracts = len([p for p in self.option_positions if p['status'] == 'open'])
-                    print(f"Skipping {current_date} ({day_name}) - Target: {strategy_params.entry_day}, Open contracts: {open_contracts}/{max_contracts}")
+                    self.open_covered_call_option(current_date, current_price, options_data, strategy_params)
                 
                 # Calculate P&L components
                 underlying_pnl = self.calculate_underlying_pnl(ticker)
