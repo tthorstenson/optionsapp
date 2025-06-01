@@ -316,7 +316,7 @@ function App() {
                   d={`M ${points.map(p => `${p.x} ${p.y}`).join(' L ')}`}
                   fill="none"
                   stroke="url(#lineGradient)"
-                  strokeWidth="3"
+                  strokeWidth="1.5"
                   filter="url(#glow)"
                 />
                 
