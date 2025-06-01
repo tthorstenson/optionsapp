@@ -704,13 +704,6 @@ function App() {
                   <PerformanceChart data={backtestResults} />
                 </div>
               )}
-              
-              {/* Breakdown: Always show if results state exists */}
-              {backtestResults === null && (
-                <div style={{ backgroundColor: '#fff3cd', padding: '10px', marginTop: '10px' }}>
-                  <strong>Breakdown:</strong> No results to display yet. Run a backtest to see results.
-                </div>
-              )}
             </div>
           </div>
         )}
