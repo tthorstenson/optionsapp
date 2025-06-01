@@ -480,19 +480,19 @@ function App() {
           className={`tab ${activeTab === 'backtest' ? 'active' : ''}`}
           onClick={() => setActiveTab('backtest')}
         >
-          📈 Backtest
+          Backtest
         </button>
         <button 
           className={`tab ${activeTab === 'strategies' ? 'active' : ''}`}
           onClick={() => setActiveTab('strategies')}
         >
-          📚 Strategy Library
+          Library
         </button>
         <button 
           className={`tab ${activeTab === 'comparison' ? 'active' : ''}`}
           onClick={() => setActiveTab('comparison')}
         >
-          ⚖️ Compare ({comparisonResults.length})
+          Compare ({comparisonResults.length})
         </button>
       </nav>
 
