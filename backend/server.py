@@ -99,16 +99,17 @@ class CoveredCallBacktester:
             if not stock_data:
                 return {"error": "No stock data available"}
             
-            # Initialize underlying position at start price
-            self.underlying_entry_price = stock_data[0]['close']
+            # Initialize underlying position with user's actual cost basis
+            self.underlying_entry_price = strategy_params.underlying_cost_basis
             self.stock_positions[ticker] = {
                 'shares': strategy_params.shares_owned,
-                'entry_price': self.underlying_entry_price,
-                'current_price': self.underlying_entry_price
+                'entry_price': strategy_params.underlying_cost_basis,  # User's actual cost basis
+                'current_price': stock_data[0]['close']  # Current market price
             }
             
-            # Calculate maximum contracts we can sell
-            max_contracts = strategy_params.shares_owned // 100
+            # Calculate maximum contracts user wants to sell (not necessarily all possible)
+            max_possible_contracts = strategy_params.shares_owned // 100
+            max_contracts = min(strategy_params.max_contracts_to_sell, max_possible_contracts)
             
             # Get options data
             options_data = self.simulate_options_data(stock_data, strategy_params)
