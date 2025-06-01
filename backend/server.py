@@ -431,7 +431,7 @@ class CoveredCallBacktester:
             'total_value': -current_option_liability  # Negative because it's a liability
         }
     
-    def calculate_underlying_summary(self, ticker: str, final_price: float):
+    def calculate_underlying_summary(self, ticker: str, final_price: float, start_date: str, end_date: str, start_price: float):
         """Calculate summary of underlying position performance"""
         if ticker not in self.stock_positions:
             return {}
@@ -440,14 +440,21 @@ class CoveredCallBacktester:
         total_pnl = (final_price - position['entry_price']) * position['shares']
         total_return = total_pnl / (position['entry_price'] * position['shares'])
         
+        # Stock price change during backtest period
+        stock_price_change = (final_price - start_price) / start_price
+        
         return {
             'ticker': ticker,
             'shares_owned': position['shares'],
-            'entry_price': position['entry_price'],
+            'entry_price': position['entry_price'],  # User's cost basis
             'final_price': final_price,
             'underlying_pnl': total_pnl,
             'underlying_return': total_return,
-            'position_value': final_price * position['shares']
+            'position_value': final_price * position['shares'],
+            'start_date': start_date,
+            'end_date': end_date,
+            'backtest_start_price': start_price,
+            'stock_price_change': stock_price_change
         }
     
     def force_close_remaining_positions(self, end_date: str, final_price: float, options_data: Dict):
