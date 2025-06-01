@@ -157,83 +157,21 @@ function App() {
     }
 
     if (comparison) {
-      // Multiple strategy comparison
-      const maxLength = Math.max(...comparisonData.map(strategy => strategy.results.results.length));
-      const combinedData = [];
-      
-      for (let i = 0; i < maxLength; i++) {
-        const dataPoint = { index: i };
-        comparisonData.forEach(strategy => {
-          if (strategy.results.results[i]) {
-            const point = strategy.results.results[i];
-            dataPoint[strategy.name] = point.portfolio_value;
-            dataPoint.date = point.date;
-          }
-        });
-        combinedData.push(dataPoint);
-      }
-
+      // Multiple strategy comparison - simplified for now
       return (
         <div className="performance-chart">
           <h3>Strategy Comparison</h3>
           <div className="chart-container">
-            <svg width="100%" height="400" viewBox="0 0 800 400">
-              {/* Chart background */}
-              <rect width="800" height="400" fill="#f8fafc" stroke="#e2e8f0"/>
-              
-              {/* Chart lines */}
-              {comparisonData.map((strategy, strategyIndex) => {
-                const strategyResults = strategy.results.results || [];
-                if (strategyResults.length === 0) return null;
-                
-                const values = strategyResults.map(p => p.portfolio_value).filter(v => !isNaN(v) && isFinite(v));
-                if (values.length === 0) return null;
-                
-                const maxValue = Math.max(...values);
-                const minValue = Math.min(...values);
-                const range = maxValue - minValue || 1;
-                
-                const points = strategyResults.map((point, index) => {
-                  const x = (index / Math.max(strategyResults.length - 1, 1)) * 780 + 10;
-                  const y = 390 - ((point.portfolio_value - minValue) / range) * 380;
-                  return `${x},${y}`;
-                }).filter(point => !point.includes('NaN')).join(' ');
-                
-                if (points.length === 0) return null;
-                
-                return (
-                  <polyline
-                    key={strategyIndex}
-                    points={points}
-                    fill="none"
-                    stroke={strategy.color}
-                    strokeWidth="2"
-                  />
-                );
-              })}
-            </svg>
-          </div>
-          
-          {/* Legend */}
-          <div className="chart-legend">
-            {comparisonData.map(strategy => (
-              <div key={strategy.id} className="legend-item">
-                <div 
-                  className="legend-color" 
-                  style={{ backgroundColor: strategy.color }}
-                ></div>
-                <span>{strategy.name}</span>
-                <span className="legend-return">
-                  {(strategy.results.performance_metrics.total_return * 100).toFixed(1)}%
-                </span>
-              </div>
-            ))}
+            <div className="chart-placeholder">
+              <p>Multi-strategy comparison chart</p>
+              <p className="text-sm text-gray-600">Feature in development</p>
+            </div>
           </div>
         </div>
       );
     }
 
-    // Single strategy chart
+    // Single strategy chart with proper styling
     if (!chartData || chartData.length === 0) {
       return (
         <div className="performance-chart">
@@ -259,25 +197,156 @@ function App() {
     const minValue = Math.min(...values);
     const range = maxValue - minValue || 1;
     
+    // Chart dimensions
+    const chartWidth = 760;
+    const chartHeight = 320;
+    const marginLeft = 80;
+    const marginRight = 40;
+    const marginTop = 20;
+    const marginBottom = 60;
+    const plotWidth = chartWidth - marginLeft - marginRight;
+    const plotHeight = chartHeight - marginTop - marginBottom;
+    
+    // Create points for the line
     const points = chartData.map((point, index) => {
-      const x = (index / Math.max(chartData.length - 1, 1)) * 780 + 10;
-      const y = 390 - ((point.portfolio_value - minValue) / range) * 380;
-      return `${x},${y}`;
-    }).filter(point => !point.includes('NaN')).join(' ');
+      const x = marginLeft + (index / Math.max(chartData.length - 1, 1)) * plotWidth;
+      const y = marginTop + (1 - (point.portfolio_value - minValue) / range) * plotHeight;
+      return { x, y, value: point.portfolio_value, date: point.date };
+    }).filter(point => !isNaN(point.x) && !isNaN(point.y));
+
+    // Create Y-axis labels
+    const yLabels = [];
+    const labelCount = 5;
+    for (let i = 0; i <= labelCount; i++) {
+      const value = minValue + (maxValue - minValue) * (i / labelCount);
+      const y = marginTop + (1 - i / labelCount) * plotHeight;
+      yLabels.push({ y, value });
+    }
+    
+    // Create X-axis labels (show every ~10th point)
+    const xLabels = [];
+    const xLabelStep = Math.max(1, Math.floor(chartData.length / 6));
+    for (let i = 0; i < chartData.length; i += xLabelStep) {
+      const x = marginLeft + (i / Math.max(chartData.length - 1, 1)) * plotWidth;
+      const date = new Date(chartData[i].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      xLabels.push({ x, date });
+    }
 
     return (
       <div className="performance-chart">
         <h3>Portfolio Performance</h3>
-        <div className="chart-container">
-          <svg width="100%" height="400" viewBox="0 0 800 400">
-            <rect width="800" height="400" fill="#f8fafc" stroke="#e2e8f0"/>
+        <div className="modern-chart-container">
+          <svg width="100%" height="400" viewBox={`0 0 ${chartWidth + 40} ${chartHeight + 40}`}>
+            {/* Chart background */}
+            <rect width="100%" height="100%" fill="rgba(15, 20, 25, 0.6)" rx="12"/>
+            
+            {/* Grid lines */}
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.5"/>
+              </pattern>
+            </defs>
+            <rect x={marginLeft} y={marginTop} width={plotWidth} height={plotHeight} fill="url(#grid)"/>
+            
+            {/* Plot area background */}
+            <rect x={marginLeft} y={marginTop} width={plotWidth} height={plotHeight} 
+                  fill="rgba(0, 0, 0, 0.2)" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1"/>
+            
+            {/* Y-axis labels */}
+            {yLabels.map((label, i) => (
+              <g key={i}>
+                <line x1={marginLeft - 5} y1={label.y} x2={marginLeft} y2={label.y} 
+                      stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1"/>
+                <text x={marginLeft - 10} y={label.y + 4} 
+                      textAnchor="end" fontSize="11" fill="#94a3b8" fontFamily="monospace">
+                  ${Math.round(label.value / 1000)}K
+                </text>
+              </g>
+            ))}
+            
+            {/* X-axis labels */}
+            {xLabels.map((label, i) => (
+              <g key={i}>
+                <line x1={label.x} y1={marginTop + plotHeight} x2={label.x} y2={marginTop + plotHeight + 5} 
+                      stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1"/>
+                <text x={label.x} y={marginTop + plotHeight + 20} 
+                      textAnchor="middle" fontSize="11" fill="#94a3b8">
+                  {label.date}
+                </text>
+              </g>
+            ))}
+            
+            {/* Axis labels */}
+            <text x={20} y={marginTop + plotHeight / 2} 
+                  textAnchor="middle" fontSize="12" fill="#00ff88" fontWeight="600"
+                  transform={`rotate(-90, 20, ${marginTop + plotHeight / 2})`}>
+              Portfolio Value
+            </text>
+            <text x={marginLeft + plotWidth / 2} y={chartHeight + 35} 
+                  textAnchor="middle" fontSize="12" fill="#00ff88" fontWeight="600">
+              Time Period
+            </text>
+            
+            {/* Performance line with gradient */}
+            <defs>
+              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#00ff88" stopOpacity="0.8"/>
+                <stop offset="100%" stopColor="#00d4aa" stopOpacity="1"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge> 
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            
+            {points.length > 1 && (
+              <>
+                {/* Area under curve */}
+                <path
+                  d={`M ${points[0].x} ${marginTop + plotHeight} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} L ${points[points.length - 1].x} ${marginTop + plotHeight} Z`}
+                  fill="url(#lineGradient)"
+                  fillOpacity="0.1"
+                />
+                
+                {/* Main line */}
+                <path
+                  d={`M ${points.map(p => `${p.x} ${p.y}`).join(' L ')}`}
+                  fill="none"
+                  stroke="url(#lineGradient)"
+                  strokeWidth="3"
+                  filter="url(#glow)"
+                />
+                
+                {/* Data points */}
+                {points.filter((_, i) => i % Math.max(1, Math.floor(points.length / 20)) === 0).map((point, i) => (
+                  <circle
+                    key={i}
+                    cx={point.x}
+                    cy={point.y}
+                    r="3"
+                    fill="#00ff88"
+                    stroke="rgba(15, 20, 25, 0.8)"
+                    strokeWidth="2"
+                  />
+                ))}
+              </>
+            )}
+            
+            {/* Start and end value indicators */}
             {points.length > 0 && (
-              <polyline
-                points={points}
-                fill="none"
-                stroke="#1e3a8a"
-                strokeWidth="3"
-              />
+              <>
+                <text x={points[0].x} y={points[0].y - 10} 
+                      textAnchor="middle" fontSize="10" fill="#00ff88" fontWeight="600">
+                  ${Math.round(points[0].value / 1000)}K
+                </text>
+                <text x={points[points.length - 1].x} y={points[points.length - 1].y - 10} 
+                      textAnchor="middle" fontSize="10" fill="#00ff88" fontWeight="600">
+                  ${Math.round(points[points.length - 1].value / 1000)}K
+                </text>
+              </>
             )}
           </svg>
         </div>
